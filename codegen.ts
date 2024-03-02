@@ -4,7 +4,7 @@ import 'dotenv/config'
 const IS_DEV = process.env.APP_ENV === 'dev'
 
 const config: CodegenConfig = {
-	schema: IS_DEV? process.env.VENDURE_SHOPAPI_DEV_URL: process.env.VENDURE_SHOPAPI_PROD_URL,
+	schema: IS_DEV? process.env.PUBLIC_SHOPAPI_DEV_URL: process.env.PUBLIC_SHOPAPI_PROD_URL,
 	// documents: ['src/**/*.{ts,svelte,graphql.ts}', '!src/lib/gql/*'],
 	documents: ['src/**/*.{ts,svelte,graphql.ts}', '!src/lib/gql/*', '!src/lib/server/**/*'],
 	ignoreNoDocuments: true,
@@ -13,7 +13,7 @@ const config: CodegenConfig = {
 			preset: 'client',
 			presetConfig: {
 				gqlTagName: 'gql',
-				fragmentMasking: false,
+				// fragmentMasking: false,
 			},
 			plugins: ['typescript'],
 			config: {

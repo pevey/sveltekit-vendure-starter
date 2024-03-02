@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getContextClient, queryStore } from '@urql/svelte'
-	import { GetProducts } from '$lib/vendure'
+	import { useFragment } from '$lib/gql'
+	import { GetProducts, Product } from '$lib/vendure'
 
 	let take = 1
 	let skip = 0
@@ -19,7 +20,7 @@
 		<p>Error: {$products.error.message}</p>
 	{:else}
 		{#if $products.data}
-			{#each $products.data.products.items as product}
+			{#each useFragment(Product, $products.data.products.items) as product}
 				<div>
 					<h2>{product.name}</h2>
 					<p>{product.description}</p>

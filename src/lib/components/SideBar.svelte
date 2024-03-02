@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { Collection, Customer } from '$lib/generated/graphql'
+	import { type FragmentType, useFragment } from '$lib/gql'
+	import { Collection, Customer } from '$lib/vendure'
 	import { X, Menu } from 'lucide-svelte'
 	import { createDialog } from '@melt-ui/svelte'
 	import { fade, fly } from 'svelte/transition'
-	export let collections: Collection[]
-	export let user: Customer|null
+	export let collections: FragmentType<typeof Collection>[]
+	export let customer: FragmentType<typeof Customer>|null
 	const { 
 		elements: { trigger, portalled, overlay, content, close },
 		states: { open, } 
@@ -34,10 +35,10 @@
 						</button>
 					</div>
 					<div class="flex flex-col">
-						{#each collections as collection}
+						{#each useFragment(Collection, collections) as collection}
 							<a href="/collection/{collection.slug}" use:close class="py-2 px-3 mr-2 rounded-md font-medium text-lg hover:bg-stone-200">{collection.name}</a>
 						{/each}
-						{#if user}
+						{#if customer}
 							<a href="/account" use:close class="py-2 px-3 mr-2 mt-12 rounded-md font-medium text-lg hover:bg-stone-200">Your Profile</a>
 							<form action="/auth?/signOut" method="POST">
 								<button type="submit" class="py-2 px-3 mr-2 rounded-md font-medium text-lg hover:bg-stone-200">Sign Out</button>

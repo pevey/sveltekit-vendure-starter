@@ -1,5 +1,6 @@
 <script lang="ts">
-   import type { Order } from '$lib/generated/graphql'
+	import { type FragmentType, useFragment } from '$lib/gql'
+	import { ActiveOrder } from '$lib/vendure'
    import { X, ShoppingCart } from 'lucide-svelte'
    import { createDialog } from '@melt-ui/svelte'
    import { fade, fly } from 'svelte/transition'
@@ -9,12 +10,11 @@
    import { formatCurrency } from '$lib/utils'
    import VendureAsset from '$lib/components/VendureAsset.svelte'
 
-   export let cart: Order|null
+   export let order: FragmentType<typeof ActiveOrder>|null
    export let count: number
 
-   $: cart = cart
-   $: lines = cart?.lines || []
-   $: total = cart?.subTotal || 0
+   $: lines = useFragment(ActiveOrder, order)?.lines || []
+   $: total = useFragment(ActiveOrder, order)?.subTotal || 0
 
    const { 
       elements: { trigger, portalled, overlay, content, title, close },

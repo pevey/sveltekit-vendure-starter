@@ -1,6 +1,16 @@
 import { gql } from '$lib/gql'
 
-export const ADDRESS_FRAGMENT = gql(`
+export const Customer = gql(`
+	fragment Customer on Customer {
+		id
+		title
+		firstName
+		lastName
+		emailAddress
+	}
+`)
+
+export const Address = gql(`
 	fragment Address on Address {
 		id
 		fullName
@@ -23,11 +33,7 @@ export const ADDRESS_FRAGMENT = gql(`
 export const GetCustomer = gql(`
 	query GetCustomer {
 		activeCustomer {
-			id
-			title
-			firstName
-			lastName
-			emailAddress
+			...Customer
 		}
 	}
 `)

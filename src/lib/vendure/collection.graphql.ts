@@ -1,6 +1,6 @@
 import { gql } from '$lib/gql'
 
-export const COLLECTION_FRAGMENT = gql(`
+export const Collection = gql(`
 	fragment Collection on Collection {
 		id
 		name
@@ -34,31 +34,17 @@ export const GetCollections = gql(`
 export const GetCollectionProducts = gql(`
 	query GetCollectionProducts($slug: String!, $skip: Int, $take: Int) {
 		search(
-		input: {
-			collectionSlug: $slug,
-			groupByProduct: true,
-			skip: $skip,
-			take: $take }
-		) {
-			totalItems
-			items {
-				productName
-				slug
-				productAsset {
-					id
-					preview
-				}
-				price {
-					... on SinglePrice {
-						value
-					}
-					... on PriceRange {
-						min
-						max
-					}
-				}
-				currencyCode
+			input: {
+				collectionSlug: $slug,
+				groupByProduct: true,
+				skip: $skip,
+				take: $take 
 			}
+		) {
+			items {
+				...SearchResult
+			}
+			totalItems
 		}
 	}
 `)
@@ -69,6 +55,7 @@ export const GetTopLevelCollections = gql(`
 			items {
 				...Collection
 			}
+			totalItems
 		}
 	}
 `)

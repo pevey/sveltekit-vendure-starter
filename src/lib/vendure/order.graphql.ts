@@ -1,6 +1,6 @@
 import { gql } from '$lib/gql'
 
-export const ORDER_FRAGMENT = gql(`
+export const Order = gql(`
 	fragment Order on Order {
 		id
 		code
@@ -25,7 +25,7 @@ export const ORDER_FRAGMENT = gql(`
 	}
 `)
 
-export const UPDATED_ORDER_FRAGMENT = gql(`
+export const UpdatedOrder = gql(`
 	fragment UpdatedOrder on Order {
 		id
 		code
@@ -46,7 +46,7 @@ export const UPDATED_ORDER_FRAGMENT = gql(`
 	}
 `)
 
-export const ACTIVE_ORDER_FRAGMENT = gql(`
+export const ActiveOrder = gql(`
 	fragment ActiveOrder on Order {
 		__typename
 		id

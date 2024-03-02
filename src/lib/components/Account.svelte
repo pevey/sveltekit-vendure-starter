@@ -1,8 +1,9 @@
 <script lang="ts">
-	import type { Customer } from '$lib/generated/graphql'
+	import { type FragmentType, useFragment } from '$lib/gql'
+	import { Customer } from '$lib/vendure'
 	import { UserCircle2 } from 'lucide-svelte'
 	import { createDropdownMenu } from '@melt-ui/svelte'
-	export let user: Customer | null = null
+	export let customer: FragmentType<typeof Customer> | null = null
 	const { 
 		elements: { trigger, menu, item }
 	} = createDropdownMenu({ 
@@ -11,7 +12,7 @@
 		preventScroll: false,
 	})
 </script>
-{#if user}
+{#if customer}
 	<button type="button" {...$trigger} use:trigger aria-label="Open account menu" class="flex p-2 ml-2 items-center justify-center hover:bg-stone-200 rounded-md">
 		<span class="sr-only">View account</span>
 		<UserCircle2 class="text-gray-800 h-10 w-10" />

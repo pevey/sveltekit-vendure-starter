@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { type FragmentType, useFragment } from '$lib/gql'
+	import { SearchResult } from '$lib/vendure'
 	import ProductCard from '$lib/components/ProductCard.svelte'
-	export let products: any
+	export let products: FragmentType<typeof SearchResult>[] = []
 	$: products = products || []
 </script>
 

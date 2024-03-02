@@ -1,6 +1,6 @@
 import { gql } from '$lib/gql'
 
-export const PRODUCT_FRAGMENT = gql(`
+export const Product = gql(`
 	fragment Product on Product {
 		id
 		name
@@ -21,7 +21,7 @@ export const PRODUCT_FRAGMENT = gql(`
 	}
 `)
 
-export const PRODUCT_DETAIL_FRAGMENT = gql(`
+export const ProductDetail = gql(`
 	fragment ProductDetail on Product {
 		id
 		name
@@ -65,6 +65,28 @@ export const PRODUCT_DETAIL_FRAGMENT = gql(`
 	}
 `)
 
+export const SearchResult = gql(`
+	fragment SearchResult on SearchResult {
+		productName
+		slug
+		description
+		productAsset {
+			id
+			preview
+		}
+		price {
+			... on SinglePrice {
+				value
+			}
+			... on PriceRange {
+				min
+				max
+			}
+		}
+		currencyCode
+	}
+`)
+
 export const GetProducts = gql(`
 	query GetProducts($options: ProductListOptions) {
 		products(options: $options) {
@@ -89,23 +111,7 @@ export const SearchProducts = gql(`
 		search(input: $input) {
 			totalItems
 			items {
-				productName
-				slug
-				description
-				productAsset {
-					id
-					preview
-				}
-				price {
-					... on SinglePrice {
-						value
-					}
-					... on PriceRange {
-						min
-						max
-					}
-				}
-				currencyCode
+				...SearchResult
 			}
 		}
 	}
