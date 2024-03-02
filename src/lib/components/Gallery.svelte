@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { type FragmentType, useFragment } from '$lib/gql'
 	import VendureAsset from '$lib/components/VendureAsset.svelte'
-	export let images: any = []
-	let selectedImage = images[0]?.preview || '/img/noimg.png'
-	// should probably remove the function below
+	import { Asset } from '$lib/vendure'
+	export let assets: FragmentType<typeof Asset>[] = []
+	$: images = useFragment(Asset, assets)
+	$: selectedImage = images[0]?.preview || '/img/noimg.png'
 	function selectImage(index: number) {
 		selectedImage = images[index].preview
 	}

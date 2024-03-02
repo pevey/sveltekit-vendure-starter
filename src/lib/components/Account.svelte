@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { type FragmentType, useFragment } from '$lib/gql'
-	import { Customer } from '$lib/vendure'
 	import { UserCircle2 } from 'lucide-svelte'
 	import { createDropdownMenu } from '@melt-ui/svelte'
-	export let customer: FragmentType<typeof Customer> | null = null
+	import { user } from '$lib/stores'
+
+	$: customer = $user
+
 	const { 
 		elements: { trigger, menu, item }
 	} = createDropdownMenu({ 

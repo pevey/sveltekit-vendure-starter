@@ -10,6 +10,10 @@
 			query: GetProducts,
 			variables: { options: { take, skip } },
 	})
+
+	const addToCart = (id: string) => {
+		console.log('Add to cart', id)
+	}
 </script>
 
 <h1>Client Products</h1>

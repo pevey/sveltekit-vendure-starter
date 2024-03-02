@@ -1,20 +1,23 @@
 <script lang="ts">
-	import { type FragmentType, useFragment } from '$lib/gql'
-	import { ActiveOrder } from '$lib/vendure'
-   import { X, ShoppingCart } from 'lucide-svelte'
+	import { X, ShoppingCart } from 'lucide-svelte'
    import { createDialog } from '@melt-ui/svelte'
    import { fade, fly } from 'svelte/transition'
    import { enhance } from '$app/forms'
    import { invalidateAll } from '$app/navigation'
-   import { PUBLIC_DEFAULT_CURRENCY } from '$env/static/public'
+	import { useFragment } from '$lib/gql'
+	import { ActiveOrder } from '$lib/vendure'
+	import { cart } from '$lib/stores'
    import { formatCurrency } from '$lib/utils'
    import VendureAsset from '$lib/components/VendureAsset.svelte'
+   import { PUBLIC_DEFAULT_CURRENCY } from '$env/static/public'
 
-   export let order: FragmentType<typeof ActiveOrder>|null
-   export let count: number
+   // $: lines = useFragment(ActiveOrder, order)?.lines || []
+   // $: total = useFragment(ActiveOrder, order)?.subTotal || 0
 
-   $: lines = useFragment(ActiveOrder, order)?.lines || []
-   $: total = useFragment(ActiveOrder, order)?.subTotal || 0
+	$: lines = useFragment(ActiveOrder, $cart)?.lines || []
+	$: total = useFragment(ActiveOrder, $cart)?.subTotal || 0
+	$: count = lines.length
+$: console.log('cart', $cart, lines, total, count)
 
    const { 
       elements: { trigger, portalled, overlay, content, title, close },

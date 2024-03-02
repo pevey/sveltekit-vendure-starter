@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { type FragmentType, useFragment } from '$lib/gql'
 	import { Collection, Customer, ActiveOrder } from '$lib/vendure'
+	import { cart } from '$lib/stores'
 	import Cart from '$lib/components/Cart.svelte'
 	import Account from '$src/lib/components/Account.svelte'
 	import SearchBox from '$lib/components/SearchBox.svelte'
 	import SideBar from '$lib/components/SideBar.svelte'
 	import ThemeSwitcher from './ThemeSwitcher.svelte'
 	export let collections: FragmentType<typeof Collection>[]
-	export let customer: FragmentType<typeof Customer>|null
-	export let order: FragmentType<typeof ActiveOrder>|null
-	export let count: number = 0
+	// export let customer: FragmentType<typeof Customer>|null
+	// export let order: FragmentType<typeof ActiveOrder>|null
+	// export let count: number = 0
+	$: order = $cart
+	$: count = useFragment(ActiveOrder, $cart)?.lines?.length || 0
 </script>
 <nav class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 bg-transparent">
 	<div class="flex flex-grow items-center justify-between mt-3">
@@ -34,13 +37,13 @@
 				<ThemeSwitcher />			
 			</div>
 			<div>
-				<Cart bind:order bind:count />
+				<Cart />
 			</div>
 			<div class="hidden md:block">
-				<Account bind:customer />
+				<Account />
 			</div>
 			<div class="lg:hidden">
-				<SideBar {collections} bind:customer />
+				<SideBar {collections} />
 			</div>
 		</div>
 	</div>

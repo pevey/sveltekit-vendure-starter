@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { type FragmentType, useFragment } from '$lib/gql'
-	import { Collection, Customer } from '$lib/vendure'
 	import { X, Menu } from 'lucide-svelte'
 	import { createDialog } from '@melt-ui/svelte'
 	import { fade, fly } from 'svelte/transition'
+	import { type FragmentType, useFragment } from '$lib/gql'
+	import { Collection, Customer } from '$lib/vendure'
+	import { user } from '$lib/stores'
 	export let collections: FragmentType<typeof Collection>[]
-	export let customer: FragmentType<typeof Customer>|null
+	// export let customer: FragmentType<typeof Customer>|null
+	$: customer = $user
 	const { 
 		elements: { trigger, portalled, overlay, content, close },
 		states: { open, } 

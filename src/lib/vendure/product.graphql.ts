@@ -27,12 +27,10 @@ export const ProductDetail = gql(`
 		name
 		description
 		featuredAsset {
-			id
-			preview
+			...Asset
 		}
 		assets {
-			id
-			preview
+			...Asset
 		}
 		variants {
 			id
@@ -51,12 +49,10 @@ export const ProductDetail = gql(`
 				}
 			}
 			featuredAsset {
-				id
-				preview
+				...Asset
 			}
 			assets {
-				id
-				preview
+				...Asset
 			}
 		}
 		customFields {
@@ -84,6 +80,32 @@ export const SearchResult = gql(`
 			}
 		}
 		currencyCode
+	}
+`)
+
+export const Asset = gql(`
+	fragment Asset on Asset {
+		id
+		createdAt
+		updatedAt
+		name
+		type
+		fileSize
+		mimeType
+		width
+		height
+		source
+		preview
+		focalPoint {
+			x
+			y
+		}
+		tags {
+			id
+			value
+			createdAt
+			updatedAt
+		}
 	}
 `)
 

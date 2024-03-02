@@ -116,7 +116,7 @@ export const GetActiveOrder = gql(`
 	}
 `)
 
-export const AddCartLine = gql(`
+export const AddItemToOrder = gql(`
 	mutation AddItemToOrder($variantId: ID!, $quantity: Int!) {
 		addItemToOrder(productVariantId: $variantId, quantity: $quantity) {
 			__typename
@@ -135,7 +135,7 @@ export const AddCartLine = gql(`
 	}
 `)
 
-export const RemoveCartLine = gql(`
+export const RemoveItemFromOrder = gql(`
 	mutation RemoveItemFromOrder($orderLineId: ID!) {
 		removeOrderLine(orderLineId: $orderLineId) {
 			...ActiveOrder
@@ -147,7 +147,7 @@ export const RemoveCartLine = gql(`
 	}
 `)
 
-export const UpdateCartLine = gql(`
+export const AdjustOrderLine = gql(`
 	mutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!) {
 		adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity) {
 			...ActiveOrder

@@ -1,16 +1,12 @@
 <script lang="ts">
-	import type { PageData } from './$types'
 	import { getContextClient, queryStore } from '@urql/svelte'
-	import { type FragmentType, useFragment } from '$lib/gql'
+	import { useFragment } from '$lib/gql'
+	import { page } from '$app/stores'
 	import { Collection, SearchResult, GetCollection, GetCollectionProducts } from '$lib/vendure'
 	import VendureAsset from '$lib/components/VendureAsset.svelte'
-	import ProductList from '$lib/components/ProductList.svelte'
-	import ProductCard from '$lib/components/ProductCard.svelte'
 	import MetaTags from '$lib/components/MetaTags.svelte'
 
-	export let data: PageData
-	// let slug = data.slug
-	$: slug = data.slug
+	$: slug = $page.params.slug
 
 	$: collectionQuery = queryStore({
 		client: getContextClient(),
