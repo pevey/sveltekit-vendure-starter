@@ -1,5 +1,5 @@
 import type { Handle } from '@sveltejs/kit'
-import { handleVendureRequest } from '$lib/server/vendure'
+// import { handleVendureRequest } from '$lib/server/vendure'
 
 export const handle: Handle = async ({ event, resolve }) => {
 
@@ -13,7 +13,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Sets locals.user and locals.cart if a vendure session is found.
 	// If you have a large app where only part of the app functions as a shop, you may want
 	// to check the request path and only run this middleware if the path is /shop or similar.
-	event = await handleVendureRequest(event)
+	// event = await handleVendureRequest(event)
 
 	// Required for all paths
 	const response = await resolve(event)

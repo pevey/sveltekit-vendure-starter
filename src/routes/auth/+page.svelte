@@ -49,7 +49,6 @@
 				processing = true
 			},
 			onResult: ({ result }) => {
-				console.log(result)
 				if (result.type === 'success') {
 					// handleSignIn()
 					// verify email
@@ -67,7 +66,7 @@
 			onSubmit: () => {
 				processing = true
 			},
-			onResult: ({ result }) => {
+			onResult: () => {
 				token = ''
 				processing = false
 			}
@@ -80,7 +79,7 @@
 			onSubmit: () => {
 				processing = true
 			},
-			onResult: ({ result }) => {
+			onResult: () => {
 				token = ''
 				processing = false
 			}

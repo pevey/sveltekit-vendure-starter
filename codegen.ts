@@ -5,13 +5,17 @@ const IS_DEV = process.env.APP_ENV === 'dev'
 
 const config: CodegenConfig = {
 	schema: IS_DEV? process.env.VENDURE_SHOPAPI_DEV_URL: process.env.VENDURE_SHOPAPI_PROD_URL,
-	documents: ['src/**/*.{ts,svelte}', '!src/lib/generated/*'],
+	// documents: ['src/**/*.{ts,svelte,graphql.ts}', '!src/lib/gql/*'],
+	documents: ['src/**/*.{ts,svelte,graphql.ts}', '!src/lib/gql/*', '!src/lib/server/**/*'],
+	ignoreNoDocuments: true,
 	generates: {
-		'src/lib/generated/': {
+		'src/lib/gql/': {
 			preset: 'client',
 			presetConfig: {
-				gqlTagName: "gql",
+				gqlTagName: 'gql',
+				fragmentMasking: false,
 			},
+			plugins: ['typescript'],
 			config: {
 				useTypeImports: true, // This is needed to avoid Vite/SvelteKit import errors
 				scalars: {
@@ -20,7 +24,6 @@ const config: CodegenConfig = {
 				}
 			}
 		},
-	},
-	ignoreNoDocuments: true
+	}
 }
 export default config
