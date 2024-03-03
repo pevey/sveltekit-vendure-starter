@@ -14,25 +14,10 @@ export const Collection = gql(`
 `)
 
 export const GetCollection = gql(`
-	query GetCollection($slug: String!) {
+	query GetCollection($slug: String!, $skip: Int, $take: Int) {
 		collection(slug: $slug) {
 			...Collection
 		}
-	}
-`)
-
-export const GetCollections = gql(`
-	query GetCollections {
-		collections {
-			items {
-				...Collection
-			}
-		}
-	}
-`)
-
-export const GetCollectionProducts = gql(`
-	query GetCollectionProducts($slug: String!, $skip: Int, $take: Int) {
 		search(
 			input: {
 				collectionSlug: $slug,
@@ -43,6 +28,17 @@ export const GetCollectionProducts = gql(`
 		) {
 			items {
 				...SearchResult
+			}
+			totalItems
+		}
+	}
+`)
+
+export const GetCollections = gql(`
+	query GetCollections($options: CollectionListOptions) {
+		collections {
+			items {
+				...Collection
 			}
 			totalItems
 		}

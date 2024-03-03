@@ -11,13 +11,9 @@
    import VendureAsset from '$lib/components/VendureAsset.svelte'
    import { PUBLIC_DEFAULT_CURRENCY } from '$env/static/public'
 
-   // $: lines = useFragment(ActiveOrder, order)?.lines || []
-   // $: total = useFragment(ActiveOrder, order)?.subTotal || 0
-
 	$: lines = useFragment(ActiveOrder, $cart)?.lines || []
 	$: total = useFragment(ActiveOrder, $cart)?.subTotal || 0
 	$: count = lines.length
-$: console.log('cart', $cart, lines, total, count)
 
    const { 
       elements: { trigger, portalled, overlay, content, title, close },

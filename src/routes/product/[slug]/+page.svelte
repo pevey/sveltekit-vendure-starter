@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types'
 	import xss from 'xss'
-	import { type OperationResultStore, getContextClient, mutationStore, queryStore } from '@urql/svelte'
+	import { getContextClient, queryStore } from '@urql/svelte'
 	import { queryParam } from 'sveltekit-search-params'
 	import { page } from '$app/stores'
 	import { enhance } from '$app/forms'  
@@ -35,16 +35,11 @@
 	// $: user = data.user as Customer
 	let tab: string = 'reviews'
 
-	let result: OperationResultStore<any>
-	const addToCart = (variantId: string) => {
-		result = mutationStore({
-			client,
-			query: AddItemToOrder,
-			variables: { variantId: variantId, quantity: 1 }
-		})
+	async function addToCart(variantId: string): Promise<void> {
+		const result = await client.mutation(AddItemToOrder, { variantId: variantId, quantity: 1 }).toPromise()
+		console.log(result.error)
+		console.log(result.data)
 	}
-	$: console.log($result?.error)
-	$: console.log($result?.data)
 </script>
 <MetaTags title={product?.name} description={product?.description} />
 <div class="max-w-screen-2xl mx-auto py-6 px-6 sm:px-12 md:px-14 lg:grid lg:grid-cols-2 lg:gap-x-6">
@@ -97,7 +92,7 @@
 		</div> 
 		<!-- <form action="/cart?/add" method="post" use:enhance={() => { return async ({ result }) => { if (result.type === 'success') { await invalidateAll() }}}}> -->
 			<!-- <input type="hidden" name="variantId" value={selectedVariantId} /> -->
-			<button type="button" on:click|preventDefault={() => { addToCart(selectedVariantId) }} class="mt-6 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">
+			<button type="button" on:click|preventDefault={async () => { addToCart(selectedVariantId) }} class="mt-6 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">
 				Add to Cart
 			</button>
 		<!-- </form> -->

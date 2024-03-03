@@ -5,8 +5,7 @@
 	import { queryStore, setContextClient } from '@urql/svelte'
 	import { page } from '$app/stores'
 	import { browser }	from '$app/environment'
-   import { useFragment } from '$src/lib/gql'
-	import { ActiveOrder, Customer, GetActiveOrder, GetCustomer, GetTopLevelCollections } from '$lib/vendure'
+	import { GetActiveOrder, GetCustomer } from '$lib/vendure'
 	import { user, cart } from '$lib/stores'
 	import NavBar from '$lib/components/NavBar.svelte'
 	import Footer from '$lib/components/Footer.svelte'
@@ -18,12 +17,6 @@
 	$: naked = nakedPaths.includes($page.url.pathname)
 
 	setContextClient(client)
-
-	$: collectionsQuery = queryStore({
-			client,
-			query: GetTopLevelCollections
-	})
-	$: collections = $collectionsQuery.data?.collections?.items || []
 
 	$: customerQuery = queryStore({
 			client,
@@ -40,7 +33,6 @@
 	})
 	$: order = $orderQuery.data?.activeOrder || null
 	$: cart.set(order)
-	$: console.log('order', order, cart)
 
 	onMount(() => {
 		if (browser) {
@@ -48,12 +40,11 @@
 			orderQuery.resume()
 		}
 	})
-
 </script>
 {#if naked}
 	<slot />
 {:else}
-	<NavBar {collections} />
+	<NavBar />
 	<slot />
 	<Footer />
 {/if}

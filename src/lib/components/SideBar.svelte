@@ -6,7 +6,6 @@
 	import { Collection, Customer } from '$lib/vendure'
 	import { user } from '$lib/stores'
 	export let collections: FragmentType<typeof Collection>[]
-	// export let customer: FragmentType<typeof Customer>|null
 	$: customer = $user
 	const { 
 		elements: { trigger, portalled, overlay, content, close },
@@ -54,7 +53,6 @@
 					1618 Marshall St, Ste. C<br>
 					Shreveport, LA 71101
 				</div>
-
 			</div>
 		</div>
 	{/if}

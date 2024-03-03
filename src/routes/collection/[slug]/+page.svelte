@@ -2,7 +2,7 @@
 	import { getContextClient, queryStore } from '@urql/svelte'
 	import { useFragment } from '$lib/gql'
 	import { page } from '$app/stores'
-	import { Collection, SearchResult, GetCollection, GetCollectionProducts } from '$lib/vendure'
+	import { Collection, SearchResult, GetCollection } from '$lib/vendure'
 	import VendureAsset from '$lib/components/VendureAsset.svelte'
 	import MetaTags from '$lib/components/MetaTags.svelte'
 
@@ -14,13 +14,7 @@
 		variables: { slug }
 	})
 	$: collection = useFragment(Collection, $collectionQuery.data?.collection) || null
-
-	$: productsQuery = queryStore({
-		client: getContextClient(),
-		query: GetCollectionProducts,
-		variables: { slug }
-	})
-	$: products = useFragment(SearchResult, $productsQuery.data?.search?.items) || []
+	$: products = useFragment(SearchResult, $collectionQuery.data?.search?.items) || []
 
 </script>
 <MetaTags title={collection?.name} description={collection?.description} />
