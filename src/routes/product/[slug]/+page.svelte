@@ -3,6 +3,7 @@
 	import xss from 'xss'
 	import { getContextClient, queryStore } from '@urql/svelte'
 	import { queryParam } from 'sveltekit-search-params'
+	import { toast } from 'svoast'
 	import { page } from '$app/stores'
 	import { enhance } from '$app/forms'  
 	import { invalidateAll } from '$app/navigation'
@@ -20,6 +21,7 @@
 	export let data: PageData
 	let reviewForm = data.reviewForm
 	const client = getContextClient()
+	let processing = false
 
 	$: slug = $page.params.slug
 
@@ -35,13 +37,23 @@
 	// $: user = data.user as Customer
 	let tab: string = 'reviews'
 
-	async function addToCart(variantId: string): Promise<void> {
+	const addToCart = async (variantId: string): Promise<void> => {
+		processing = true
 		const result = await client.mutation(AddItemToOrder, { variantId: variantId, quantity: 1 }).toPromise()
-		console.log(result.error)
-		console.log(result.data)
+		if (result.error) {
+			toast.error('Error adding item to cart')
+		} else if (result.data) {
+			toast.success('Item added to cart')
+		}
+		processing = false
 	}
+	function create() {
+		console.log('create')
+    	toast.success('Product created')
+    }
 </script>
 <MetaTags title={product?.name} description={product?.description} />
+<button on:click={create}> Create </button>
 <div class="max-w-screen-2xl mx-auto py-6 px-6 sm:px-12 md:px-14 lg:grid lg:grid-cols-2 lg:gap-x-6">
 	<div class="lg:max-w-lg">
 		<h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{product?.name}</h1>
@@ -92,7 +104,7 @@
 		</div> 
 		<!-- <form action="/cart?/add" method="post" use:enhance={() => { return async ({ result }) => { if (result.type === 'success') { await invalidateAll() }}}}> -->
 			<!-- <input type="hidden" name="variantId" value={selectedVariantId} /> -->
-			<button type="button" on:click|preventDefault={async () => { addToCart(selectedVariantId) }} class="mt-6 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">
+			<button type="button" disabled={processing} on:click|preventDefault={async () => { addToCart(selectedVariantId) }} class="mt-6 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">
 				Add to Cart
 			</button>
 		<!-- </form> -->

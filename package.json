@@ -39,6 +39,7 @@
 		"sveltekit-superfetch": "^3.0.3",
 		"sveltekit-superforms": "^2.6.2",
 		"sveltekit-turnstile": "^1.2.0",
+		"svoast": "^2.4.4",
 		"tailwindcss": "^3.4.1",
 		"tslib": "^2.4.1",
 		"typescript": "^5.3.3",

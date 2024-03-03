@@ -1,12 +1,14 @@
 <script lang="ts">
 	import '$src/app.pcss'
 	import type { PageData } from './$types'
-	import { onMount } from 'svelte'
 	import { queryStore, setContextClient } from '@urql/svelte'
+	import { Toasts } from 'svoast'
+	import { onMount } from 'svelte'
 	import { page } from '$app/stores'
 	import { browser }	from '$app/environment'
 	import { GetActiveOrder, GetCustomer } from '$lib/vendure'
 	import { user, cart } from '$lib/stores'
+	import Theme from '$lib/components/Theme.svelte'
 	import NavBar from '$lib/components/NavBar.svelte'
 	import Footer from '$lib/components/Footer.svelte'
 
@@ -41,6 +43,8 @@
 		}
 	})
 </script>
+<Theme />
+<Toasts />
 {#if naked}
 	<slot />
 {:else}

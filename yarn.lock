@@ -4605,6 +4605,11 @@ sveltekit-turnstile@^1.2.0:
   resolved "https://registry.yarnpkg.com/sveltekit-turnstile/-/sveltekit-turnstile-1.2.0.tgz#74f5773ddf8655002426fe5676b67b7629b6661c"
   integrity sha512-ZFqls0idDxhC5JLviqWP0+ryQiHn1gfj4r0s0XJDUuMW6xyd67dqzhxGGb2LJNdBFlCj6DydDqtDPR6eX5OyXw==
 
+svoast@^2.4.4:
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/svoast/-/svoast-2.4.4.tgz#adb1ceded2852881c46677f3a2579d9766215d9d"
+  integrity sha512-GgyV8qiFL240gYuu1TmP1haibMB2/tjOiN8KB2bFI2y9DFppFN+Gd/Z1ey5CbvaqHtDw5WSrimgq4LTrNEB9tQ==
+
 swap-case@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/swap-case/-/swap-case-2.0.2.tgz#671aedb3c9c137e2985ef51c51f9e98445bf70d9"

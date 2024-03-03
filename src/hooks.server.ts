@@ -8,6 +8,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 		await new Promise(resolve => setTimeout(resolve, 500))
 	}
 
+	event.locals.sid = event.cookies.get('session') || ''
+	event.locals.ssig = event.cookies.get('session.sig') || ''
+
 	// Required for all paths
 	const response = await resolve(event)
 
