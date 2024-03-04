@@ -37,15 +37,19 @@
 					</div>
 					<div class="flex flex-col">
 						{#each useFragment(Collection, collections) as collection}
-							<a href="/collection/{collection.slug}" use:close class="py-2 px-3 mr-2 rounded-md font-medium text-lg hover:bg-stone-200">{collection.name}</a>
+							<a href="/collection/{collection.slug}" class="py-3 px-3 mr-2 font-medium group transition-all duration-200 ease-in-out">
+								<span class="py-2 bg-left-bottom bg-gradient-to-r from-lime-600 to-lime-600 bg-[length:0%_1px] bg-no-repeat group-hover:bg-[length:100%_1px] transition-all duration-500 ease-out">
+									{collection.name}
+								</span>
+							</a>
 						{/each}
 						{#if customer}
-							<a href="/account" use:close class="py-2 px-3 mr-2 mt-12 rounded-md font-medium text-lg hover:bg-stone-200">Your Profile</a>
+							<a href="/account" use:close class="py-2 px-3 mr-2 mt-12 rounded-md font-medium text-lg">Your Profile</a>
 							<form action="/auth?/signOut" method="POST">
-								<button type="submit" class="py-2 px-3 mr-2 rounded-md font-medium text-lg hover:bg-stone-200">Sign Out</button>
+								<button type="submit" class="py-2 px-3 mr-2 rounded-md font-medium text-lg">Sign Out</button>
 							</form>
 						{:else}
-							<a href="/auth" use:close class="py-2 px-3 mr-2 mt-12 rounded-md font-medium text-lg hover:bg-stone-200">Sign In</a>
+							<a href="/auth" use:close class="py-2 px-3 mr-2 mt-12 rounded-md font-medium text-lg">Sign In</a>
 						{/if}
 					</div>
 				</div>

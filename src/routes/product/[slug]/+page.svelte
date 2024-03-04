@@ -47,13 +47,8 @@
 		}
 		processing = false
 	}
-	function create() {
-		console.log('create')
-    	toast.success('Product created')
-    }
 </script>
 <MetaTags title={product?.name} description={product?.description} />
-<button on:click={create}> Create </button>
 <div class="max-w-screen-2xl mx-auto py-6 px-6 sm:px-12 md:px-14 lg:grid lg:grid-cols-2 lg:gap-x-6">
 	<div class="lg:max-w-lg">
 		<h1 class="text-2xl sm:text-3xl font-bold tracking-tight">{product?.name}</h1>
