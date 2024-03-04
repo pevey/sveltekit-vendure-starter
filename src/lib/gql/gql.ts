@@ -53,7 +53,7 @@ const documents = {
     "\n\tfragment Asset on Asset {\n\t\tid\n\t\tcreatedAt\n\t\tupdatedAt\n\t\tname\n\t\ttype\n\t\tfileSize\n\t\tmimeType\n\t\twidth\n\t\theight\n\t\tsource\n\t\tpreview\n\t\tfocalPoint {\n\t\t\tx\n\t\t\ty\n\t\t}\n\t\ttags {\n\t\t\tid\n\t\t\tvalue\n\t\t\tcreatedAt\n\t\t\tupdatedAt\n\t\t}\n\t}\n": types.AssetFragmentDoc,
     "\n\tquery GetProducts($options: ProductListOptions) {\n\t\tproducts(options: $options) {\n\t\t\titems {\n\t\t\t\t...Product\t\n\t\t\t}\n\t\t\ttotalItems\n\t\t}\n\t}\n": types.GetProductsDocument,
     "\n\tquery GetProduct($slug: String!) {\n\t\tproduct(slug: $slug) {\n\t\t\t...ProductDetail\n\t\t}\n\t}\n": types.GetProductDocument,
-    "\n\tquery SearchProducts($input: SearchInput!) {\n\t\tsearch(input: $input) {\n\t\t\ttotalItems\n\t\t\titems {\n\t\t\t\t...SearchResult\n\t\t\t}\n\t\t}\n\t}\n": types.SearchProductsDocument,
+    "\n\tquery SearchProducts($input: SearchInput!) {\n\t\tsearch(input: $input) {\n\t\t\titems {\n\t\t\t\t...SearchResult\n\t\t\t}\n\t\t\ttotalItems\n\t\t}\n\t}\n": types.SearchProductsDocument,
 };
 
 /**
@@ -233,7 +233,7 @@ export function gql(source: "\n\tquery GetProduct($slug: String!) {\n\t\tproduct
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tquery SearchProducts($input: SearchInput!) {\n\t\tsearch(input: $input) {\n\t\t\ttotalItems\n\t\t\titems {\n\t\t\t\t...SearchResult\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery SearchProducts($input: SearchInput!) {\n\t\tsearch(input: $input) {\n\t\t\ttotalItems\n\t\t\titems {\n\t\t\t\t...SearchResult\n\t\t\t}\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tquery SearchProducts($input: SearchInput!) {\n\t\tsearch(input: $input) {\n\t\t\titems {\n\t\t\t\t...SearchResult\n\t\t\t}\n\t\t\ttotalItems\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery SearchProducts($input: SearchInput!) {\n\t\tsearch(input: $input) {\n\t\t\titems {\n\t\t\t\t...SearchResult\n\t\t\t}\n\t\t\ttotalItems\n\t\t}\n\t}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

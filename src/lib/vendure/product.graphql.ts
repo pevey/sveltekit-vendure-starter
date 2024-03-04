@@ -132,10 +132,10 @@ export const GetProduct = gql(`
 export const SearchProducts = gql(`
 	query SearchProducts($input: SearchInput!) {
 		search(input: $input) {
-			totalItems
 			items {
 				...SearchResult
 			}
+			totalItems
 		}
 	}
 `)
