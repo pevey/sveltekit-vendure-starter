@@ -135,8 +135,8 @@ export const AddItemToOrder = gql(`
 	}
 `)
 
-export const RemoveItemFromOrder = gql(`
-	mutation RemoveItemFromOrder($orderLineId: ID!) {
+export const RemoveOrderLine = gql(`
+	mutation RemoveOrderLine($orderLineId: ID!) {
 		removeOrderLine(orderLineId: $orderLineId) {
 			...ActiveOrder
 			... on ErrorResult {

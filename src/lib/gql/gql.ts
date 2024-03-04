@@ -35,7 +35,7 @@ const documents = {
     "\n\tquery GetOrderByCode($code: String!) {\n\t\torderByCode(code: $code) {\n\t\t\t...Order\n\t\t}\n\t}\n": types.GetOrderByCodeDocument,
     "\n\tquery GetActiveOrder {\n\t\tactiveOrder {\n\t\t\t...ActiveOrder\n\t\t}\n\t}\n": types.GetActiveOrderDocument,
     "\n\tmutation AddItemToOrder($variantId: ID!, $quantity: Int!) {\n\t\taddItemToOrder(productVariantId: $variantId, quantity: $quantity) {\n\t\t\t__typename\n\t\t\t...UpdatedOrder\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t\t... on InsufficientStockError {\n\t\t\t\tquantityAvailable\n\t\t\t\torder {\n\t\t\t\t\t...UpdatedOrder\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.AddItemToOrderDocument,
-    "\n\tmutation RemoveItemFromOrder($orderLineId: ID!) {\n\t\tremoveOrderLine(orderLineId: $orderLineId) {\n\t\t\t...ActiveOrder\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.RemoveItemFromOrderDocument,
+    "\n\tmutation RemoveOrderLine($orderLineId: ID!) {\n\t\tremoveOrderLine(orderLineId: $orderLineId) {\n\t\t\t...ActiveOrder\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.RemoveOrderLineDocument,
     "\n\tmutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!) {\n\t\tadjustOrderLine(orderLineId: $orderLineId, quantity: $quantity) {\n\t\t\t...ActiveOrder\n\t\t\t... on ErrorResult {\n\t\t\t\t\terrorCode\n\t\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.AdjustOrderLineDocument,
     "\n\tmutation AddOrderCouponCode($couponCode: String!) {\n\t\tapplyCouponCode(couponCode: $couponCode) {\n\t\t\t...ActiveOrder\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.AddOrderCouponCodeDocument,
     "\n\tmutation RemoveOrderCouponCode($couponCode: String!) {\n\t\tremoveCouponCode(couponCode: $couponCode) {\n\t\t\t...ActiveOrder\n\t\t}\n\t}\n": types.RemoveOrderCouponCodeDocument,
@@ -161,7 +161,7 @@ export function gql(source: "\n\tmutation AddItemToOrder($variantId: ID!, $quant
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tmutation RemoveItemFromOrder($orderLineId: ID!) {\n\t\tremoveOrderLine(orderLineId: $orderLineId) {\n\t\t\t...ActiveOrder\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation RemoveItemFromOrder($orderLineId: ID!) {\n\t\tremoveOrderLine(orderLineId: $orderLineId) {\n\t\t\t...ActiveOrder\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tmutation RemoveOrderLine($orderLineId: ID!) {\n\t\tremoveOrderLine(orderLineId: $orderLineId) {\n\t\t\t...ActiveOrder\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation RemoveOrderLine($orderLineId: ID!) {\n\t\tremoveOrderLine(orderLineId: $orderLineId) {\n\t\t\t...ActiveOrder\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

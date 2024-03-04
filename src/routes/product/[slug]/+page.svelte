@@ -21,17 +21,14 @@
 	const client = getContextClient()
 	$: slug = $page.params.slug
 	$: queryParams = queryParameters()
-	$: console.log($queryParams?.variant)
 	$: tab = $queryParams?.tab || 'reviews'
 
+	// these three will always be set from our PageData to enable SSR or SSG
 	let product = useFragment(ProductDetail, data.product)
 	let selectedVariantId = product?.variants[0]?.id || ''
 	$: selectedVariantId = $queryParams?.variant || product?.variants[0]?.id || ''
-	$: productQuery = queryStore({
-		client,
-		query: GetProduct,
-		variables: { slug }
-	})
+	// these two enable the client to take over data fetching after the initial render
+	$: productQuery = queryStore({ client, query: GetProduct, variables: { slug } })
 	$: product = useFragment(ProductDetail, $productQuery?.data?.product) || product
 
 	// Reviews have to be enabled first on the Vendure backend
@@ -42,11 +39,8 @@
 	const addToCart = async (variantId: string): Promise<void> => {
 		processing = true
 		const result = await client.mutation(AddItemToOrder, { variantId: variantId, quantity: 1 }).toPromise()
-		if (result.error) {
-			toast.error('Error adding item to cart')
-		} else if (result.data) {
-			toast.success('Item added to cart')
-		}
+		if (result.error) toast.error('Error adding item to cart')
+		else if (result.data) toast.success('Item added to cart')
 		processing = false
 	}
 </script>
@@ -105,7 +99,7 @@
 				Select a Variant
 			{/if}
 		</div> 
-		<button type="button" disabled={processing} on:click|preventDefault={async () => { addToCart(selectedVariantId) }} class="mt-6 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">
+		<button type="button" disabled={processing} on:click|preventDefault={ async () => { addToCart(selectedVariantId) }} class="mt-6 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">
 			Add to Cart
 		</button>
 	</div>

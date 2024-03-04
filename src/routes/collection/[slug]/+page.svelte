@@ -10,16 +10,13 @@
 	export let data: PageData
 
 	$: slug = $page.params.slug
+	// these two will always be set from our PageData to enable SSR or SSG
 	let collection = useFragment(Collection, data.result?.collection) || null
 	let products = useFragment(SearchResult, data.result?.search?.items) || []
-	$: collectionQuery = queryStore({
-		client: getContextClient(),
-		query: GetCollection,
-		variables: { slug }
-	})
+	// these three enable the client to take over data fetching after the initial render
+	$: collectionQuery = queryStore({ client: getContextClient(), query: GetCollection, variables: { slug } })
 	$: collection = useFragment(Collection, $collectionQuery.data?.collection) || collection
 	$: products = useFragment(SearchResult, $collectionQuery.data?.search?.items) || products
-
 </script>
 <MetaTags title={collection?.name} description={collection?.description} />
 <section class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
