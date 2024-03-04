@@ -29,6 +29,10 @@ select:focus {
 	border-color: var(--primary-color);
 }
 
+.grow-on-hover {
+	@apply transition ease-in-out hover:-translate-y-1 hover:scale-110;
+}
+
 /* FORMS */
 [data-fs-label], .label {
 	@apply block m-1 mt-4 text-gray-600 font-semibold;

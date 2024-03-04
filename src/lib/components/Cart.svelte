@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { X, ShoppingCart } from 'lucide-svelte'
+	import { X, ShoppingBag } from 'lucide-svelte'
    import { createDialog } from '@melt-ui/svelte'
    import { fade, fly } from 'svelte/transition'
    import { enhance } from '$app/forms'
@@ -32,9 +32,9 @@
 
 </script>
 {#if $open}
-   <button {...$close} use:close class="flex relative mx-2 p-2 items-center justify-center hover:bg-stone-200 rounded-md">
+   <button {...$close} use:close class="relative align-middle items-center grow-on-hover">
       <span class="sr-only">Close cart</span>
-      <ShoppingCart class="text-gray-800 h-10 w-10" />
+      <ShoppingBag class="h-9 w-9" />
       {#if count > 0}
          <span class="z-50 absolute top-3 right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-lime-600 rounded-full">
             {count}
@@ -42,9 +42,9 @@
       {/if}
    </button>
 {:else}
-   <button {...$trigger} use:trigger class="flex p-2 relative mx-2 items-center justify-center hover:bg-stone-200 rounded-md">
+   <button {...$trigger} use:trigger class="relative align-middle items-center grow-on-hover">
       <span class="sr-only">View cart</span>
-      <ShoppingCart class="text-gray-800 h-10 w-10" />
+      <ShoppingBag class="h-9 w-9" />
       {#if count > 0}
          <span class="z-50 absolute top-3 right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-lime-600 rounded-full">
             {count}
@@ -55,15 +55,15 @@
 <div use:portalled>
    {#if $open}
       <div {...$overlay} use:overlay class="fixed inset-0 z-20 bg-black/50" transition:fade={{ duration: 150 }} />
-      <div {...$content} use:content class="overflow-auto fixed right-0 top-0 z-50 w-full h-full pb-0 mb-0 sm:w-4/5 md:w-2/3 lg:w-2/3 xl:w-1/2 bg-white p-[25px] shadow-lg focus:outline-none" transition:fly={{ x: '100%', duration: 300, opacity: 1, }}>
+      <div {...$content} use:content class="overflow-auto fixed right-0 top-0 z-50 w-full h-full pb-0 mb-0 sm:w-4/5 md:w-2/3 lg:w-2/3 xl:w-1/2 bg-white dark:bg-black p-[25px] shadow-lg focus:outline-none" transition:fly={{ x: '100%', duration: 300, opacity: 1, }}>
          <button {...$close} use:close>
-            <X class="text-gray-800 h-10 w-10" />
+            <X class="h-10 w-10" />
          </button>
          <div class="px-8 sm:px-12">
-            <h2 {...$title} use:title class="mb-6 text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            <h2 {...$title} use:title class="mb-6 text-center text-3xl font-bold tracking-tight sm:text-4xl">
                Shopping Cart
             </h2>
-            <ul role="list" class="divide-y divide-gray-200 border-t border-gray-200">
+            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-800 border-t border-gray-200 dark:border-gray-800">
                {#each lines as line}
                   <li class="flex py-6">
                      <a data-sveltekit-reload href={`/product/${line.productVariant?.product?.slug}?variant=${line.productVariant.id}`} >
@@ -79,12 +79,12 @@
                         <div>
                            <div class="flex justify-between">
                               <a data-sveltekit-reload href={`/product/${line.productVariant?.product?.slug}?variant=${line.productVariant.id}`} class="cursor-pointer text-sm">
-                                 <div class="font-medium text-gray-700 hover:text-gray-800">{line.productVariant.name}</div>
-                                 <p class="mt-1 text-sm text-gray-500">Facet Values will go here</p>
+                                 <div class="font-medium hover:text-gray-800">{line.productVariant.name}</div>
+                                 <p class="mt-1 text-sm">Facet Values will go here</p>
                               </a>
                               <div>
                                  <p class="ml-4 text-sm font-medium text-gray-900">{formatCurrency(line.unitPrice, PUBLIC_DEFAULT_CURRENCY)}</p>
-                                 <p class="ml-4 text-sm text-gray-900 text-right">Qty: {line.quantity}</p>
+                                 <p class="ml-4 text-sm text-right">Qty: {line.quantity}</p>
                               </div>
                            </div>
                         </div>
@@ -93,7 +93,7 @@
                               return async ({ result }) => { 
                                     if (result.type === 'success') invalidateAll()
                               }}}>
-                              <select name="quantity" class="text-sm font-medium text-gray-900 rounded-lg focus:ring-gray-700 focus:border-none" on:change="{async(e) => updateQuantity(e)}">
+                              <select name="quantity" class="text-sm font-medium rounded-lg focus:ring-gray-700 focus:border-none" on:change="{async(e) => updateQuantity(e)}">
                                     {#each [1,2,3,4,5,6,7,8,9,10,11,12] as qty}
                                     <option value={qty} selected={qty === line.quantity}>{qty}</option>
                                     {/each}
@@ -122,23 +122,23 @@
                   </div>
                {/each}
             </ul>
-            <section aria-labelledby="summary-heading" class="border-t border-gray-200 bg-white sticky bottom-0 py-6">
+            <section aria-labelledby="summary-heading" class="border-t border-gray-200 dark:border-gray-800  bg-white dark:bg-black sticky bottom-0 py-6">
                {#if lines.length > 0}
                <h2 id="summary-heading" class="sr-only">Order summary</h2>
                <div>
                      <dl class="space-y-4">
                         <div class="flex items-center justify-between">
-                           <dt class="ml-2 text-base font-medium text-gray-900">Subtotal</dt>
-                           <dd class="ml-4 mr-2 text-base font-medium text-gray-900">{formatCurrency(total, PUBLIC_DEFAULT_CURRENCY)}</dd>
+                           <dt class="ml-2 text-base font-medium">Subtotal</dt>
+                           <dd class="ml-4 mr-2 text-base font-medium">{formatCurrency(total, PUBLIC_DEFAULT_CURRENCY)}</dd>
                         </div>
                      </dl>
-                     <p class="ml-2 mt-1 text-sm text-gray-500">Shipping and taxes will be calculated at checkout.</p>
+                     <p class="ml-2 mt-1 text-sm">Shipping and taxes will be calculated at checkout.</p>
                </div>
                <form action="/checkout">
                   <button use:close type="submit" class="my-4 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">Checkout</button>
                </form>
                {/if}
-               <button {...$close} use:close class="w-full text-center font-medium text-gray-800 hover:text-gray-500">
+               <button {...$close} use:close class="w-full text-center font-medium text-gray-800 hover:text-gray-500 dark:text-gray-200 dark:hover:text-gray-500">
                   &larr; Continue Shopping
                </button>
             </section>

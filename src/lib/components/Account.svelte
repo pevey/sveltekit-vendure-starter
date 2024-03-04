@@ -14,15 +14,15 @@
 	})
 </script>
 {#if customer}
-	<button type="button" {...$trigger} use:trigger aria-label="Open account menu" class="flex p-2 ml-2 items-center justify-center hover:bg-stone-200 rounded-md">
+	<button type="button" {...$trigger} use:trigger aria-label="Open account menu" class="align-middle items-center grow-on-hover">
 		<span class="sr-only">View account</span>
-		<UserCircle2 class="text-gray-800 h-10 w-10" />
+		<UserCircle2 class="h-9 w-9" />
 	</button>
 {:else}
 	<a href="/auth">
-		<button type="button" class="flex p-2 mx-2 items-center justify-center hover:bg-stone-200 rounded-md">
+		<button type="button" class="align-middle items-center grow-on-hover">
 			<span class="sr-only">Sign In</span>
-			<UserCircle2 class="text-gray-800 h-10 w-10" />
+			<UserCircle2 class="h-9 w-9" />
 		</button>
 	</a>
 {/if}

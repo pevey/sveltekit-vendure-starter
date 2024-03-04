@@ -19,7 +19,7 @@
 </script>
 <MetaTags title={collection?.name} description={collection?.description} />
 <section class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-	<h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 my-4 sm:my-6">{collection?.name}</h1>
+	<h1 class="text-2xl sm:text-3xl font-bold tracking-tight my-4 sm:my-6">{collection?.name}</h1>
 	<section class="relative hidden sm:block sm:h-80 lg:h-96 w-full mb-8 sm:mb-16">
 		<VendureAsset preview={collection?.featuredAsset?.preview} preset="large" alt={collection?.name} class="absolute object-cover w-full h-full rounded-md"/>
 		<div class="absolute inset-0 bg-black/30 flex items-center justify-center rounded-md">
@@ -34,7 +34,7 @@
 					<VendureAsset preview={productAsset?.preview} preset="medium" alt={productName} class="mx-auto object-cover h-80 w-80 object-center group-hover:opacity-75 overflow-hidden rounded-lg"/>
 					<div class="flex">
 						<div class="mx-auto">
-							<h3 class="mt-4 text-lg font-bold text-gray-700">{productName}</h3>
+							<h3 class="mt-4 text-lg font-bold">{productName}</h3>
 							<!-- <p class="mt-1 text-lg font-medium text-gray-900">{product.price.value || product.price.min}</p> -->
 						</div>
 					</div>

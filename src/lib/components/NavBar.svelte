@@ -26,7 +26,11 @@
 			</a>
 			<div class="hidden lg:block mr-auto lg:ml-6">
 				{#each useFragment(Collection, collections) as collection}
-					<a href="/collection/{collection.slug}" class="py-2 px-3 mr-2 rounded-md font-medium text-lg lg:hover:bg-stone-200">{collection.name}</a>
+					<a href="/collection/{collection.slug}" class="py-3 px-3 mr-2 font-medium group transition-all duration-200 ease-in-out">
+						<span class="py-2 bg-left-bottom bg-gradient-to-r from-lime-600 to-lime-600 bg-[length:0%_1px] bg-no-repeat group-hover:bg-[length:100%_1px] transition-all duration-500 ease-out">
+							{collection.name}
+						</span>
+					</a>
 				{:else}
 					Error: No collections found
 				{/each}
@@ -35,18 +39,18 @@
 		<div class="flex flex-grow align-middle items-center justify-between ml-4">
 			<SearchBox />
 		</div>
-		<div class="flex flex-none relative align-middle justify-end lg:ml-4">
-			<div>  
+		<div class="flex flex-none align-middle items-center justify-end md:ml-2 lg:ml-4">
+			<div class="lg:hidden p-2">
+				<SideBar {collections} />
+			</div>
+			<div class="p-2">  
 				<ThemeSwitcher />			
 			</div>
-			<div>
-				<Cart />
-			</div>
-			<div class="hidden md:block">
+			<div class="hidden md:block p-2">
 				<Account />
 			</div>
-			<div class="lg:hidden">
-				<SideBar {collections} />
+			<div class="p-2">
+				<Cart />
 			</div>
 		</div>
 	</div>
