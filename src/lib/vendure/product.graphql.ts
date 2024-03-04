@@ -25,6 +25,7 @@ export const ProductDetail = gql(`
 	fragment ProductDetail on Product {
 		id
 		name
+		slug
 		description
 		featuredAsset {
 			...Asset

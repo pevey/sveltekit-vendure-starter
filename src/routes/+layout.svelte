@@ -13,13 +13,11 @@
 	import Footer from '$lib/components/Footer.svelte'
 
 	export let data: PageData
+
 	const client = data.client
-	const collections = data.collections
-
-	const nakedPaths = ['/auth', '/checkout', '/sitemap.xml']
-	$: naked = nakedPaths.includes($page.url.pathname)
-
 	setContextClient(client)
+	
+	const collections = data.collections
 
 	$: customerQuery = queryStore({
 			client,
@@ -36,6 +34,9 @@
 	})
 	$: order = $orderQuery.data?.activeOrder || null
 	$: cart.set(order)
+
+	const nakedPaths = ['/auth', '/checkout', '/sitemap.xml']
+	$: naked = nakedPaths.includes($page.url.pathname)
 
 	onMount(() => {
 		if (browser) {

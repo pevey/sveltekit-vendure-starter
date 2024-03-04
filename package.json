@@ -16,7 +16,7 @@
 	"devDependencies": {
 		"@graphql-codegen/cli": "^5.0.2",
 		"@graphql-codegen/client-preset": "^4.2.4",
-		"@melt-ui/svelte": "^0.75.1",
+		"@melt-ui/svelte": "^0.75.2",
 		"@parcel/watcher": "^2.4.1",
 		"@playwright/test": "^1.42.1",
 		"@sveltejs/adapter-node": "^4.0.1",
@@ -33,7 +33,7 @@
 		"shx": "^0.3.4",
 		"svelte": "^4.2.12",
 		"svelte-check": "^3.6.6",
-		"svelte-meta-tags": "^3.0.4",
+		"svelte-meta-tags": "^3.1.1",
 		"sveltekit-search-params": "^2.1.1",
 		"sveltekit-stripe": "^3.0.1",
 		"sveltekit-superfetch": "^3.0.3",

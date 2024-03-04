@@ -2,7 +2,7 @@
 	import type { PageData } from './$types'
 	import xss from 'xss'
 	import { getContextClient, queryStore } from '@urql/svelte'
-	import { queryParam } from 'sveltekit-search-params'
+	import { queryParameters } from 'sveltekit-search-params'
 	import { toast } from 'svoast'
 	import { page } from '$app/stores'
 	import { formatCurrency } from '$lib/utils'
@@ -19,21 +19,25 @@
 	export let data: PageData
 
 	const client = getContextClient()
-
 	$: slug = $page.params.slug
+	$: queryParams = queryParameters()
+	$: console.log($queryParams?.variant)
+	$: tab = $queryParams?.tab || 'reviews'
+
 	let product = useFragment(ProductDetail, data.product)
 	let selectedVariantId = product?.variants[0]?.id || ''
-	$: selectedVariantId = product?.variants[0]?.id || ''
-	// $: reviews = product?.reviews || []
+	$: selectedVariantId = $queryParams?.variant || product?.variants[0]?.id || ''
 	$: productQuery = queryStore({
-			client,
-			query: GetProduct,
-			variables: { slug }
-		})
+		client,
+		query: GetProduct,
+		variables: { slug }
+	})
 	$: product = useFragment(ProductDetail, $productQuery?.data?.product) || product
 
+	// Reviews have to be enabled first on the Vendure backend
+	// $: reviews = product?.reviews || []
+
 	let processing = false
-	let tab: string = 'reviews'
 
 	const addToCart = async (variantId: string): Promise<void> => {
 		processing = true
@@ -61,9 +65,11 @@
 							{variant.name}
 						</button>
 					{:else}
-					<button type="button" on:click={() => { selectedVariantId = variant.id }} class="uppercase whitespace-nowrap px-3 py-2 mr-2 mb-2 rounded-lg text-sm font-medium border border-gray-400 hover:bg-stone-200 dark:hover:bg-stone-700">
-						{variant.name}
+					<a href={`/product/${product.slug}?variant=${variant.id}`}>
+						<button type="button" class="uppercase whitespace-nowrap px-3 py-2 mr-2 mb-2 rounded-lg text-sm font-medium border border-gray-400 hover:bg-stone-200 dark:hover:bg-stone-700">
+							{variant.name}
 						</button>
+					</a>
 					{/if}
 				{/each}
 			</div>
@@ -90,17 +96,18 @@
 		{/each} -->
 		<div class="mt-6">
 			<h3 class="text-sm font-medium">Price</h3>
-			<div class="mt-1 flex items-baseline">
-				<p class="text-xl font-semibold">{formatCurrency(product?.variants[product?.variants.findIndex(v => v.id === selectedVariantId)].price || 0, PUBLIC_DEFAULT_CURRENCY)}</p>
-				<p class="ml-1 text-sm font-medium">/ {product?.variants[product.variants.findIndex(v => v.id === selectedVariantId)].name}</p>
-			</div>
+			{#if product?.variants[product?.variants.findIndex(v => v.id === selectedVariantId)]}
+				<div class="mt-1 flex items-baseline">
+					<p class="text-xl font-semibold">{formatCurrency(product?.variants[product?.variants.findIndex(v => v.id === selectedVariantId)].price, PUBLIC_DEFAULT_CURRENCY)}</p>
+					<p class="ml-1 text-sm font-medium">/ {product?.variants[product.variants.findIndex(v => v.id === selectedVariantId)]?.name}</p>
+				</div>
+			{:else}
+				Select a Variant
+			{/if}
 		</div> 
-		<!-- <form action="/cart?/add" method="post" use:enhance={() => { return async ({ result }) => { if (result.type === 'success') { await invalidateAll() }}}}> -->
-			<!-- <input type="hidden" name="variantId" value={selectedVariantId} /> -->
-			<button type="button" disabled={processing} on:click|preventDefault={async () => { addToCart(selectedVariantId) }} class="mt-6 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">
-				Add to Cart
-			</button>
-		<!-- </form> -->
+		<button type="button" disabled={processing} on:click|preventDefault={async () => { addToCart(selectedVariantId) }} class="mt-6 w-full items-center justify-center rounded-md border border-transparent bg-lime-600 px-5 py-3 text-base font-medium text-white hover:bg-lime-700">
+			Add to Cart
+		</button>
 	</div>
 	<div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 items-start">
 		<Gallery assets={product?.assets} />      
@@ -111,16 +118,20 @@
 	<!-- Tabs -->
 	<div class="max-w-screen-lg lg:col-span-2">
 		<div class="flex" aria-orientation="horizontal" role="tablist">
-			<button type="button" on:click="{() => tab = 'reviews'}" class="{tab === 'reviews' ? 
-				"whitespace-nowrap p-3 pr-4 mr-4 border-b-2 font-medium border-lime-600" : 
-				"whitespace-nowrap p-3 pr-4 mr-4 text-gray-500 hover:text-gray-700 border-b border-gray-300 hover:border-b-2 hover:border-gray-300"}">
-				Customer Reviews
-			</button>
-			<button type="button" on:click="{() => tab = 'faq'}" class="{tab === 'faq' ? 
-				"whitespace-nowrap p-3 px-4 mr-4 border-b-2 font-medium border-lime-600" : 
-				"whitespace-nowrap p-3 px-4 mr-4 text-gray-500 hover:text-gray-700 border-b border-gray-300 hover:border-b-2 hover:border-gray-300"}">
-				FAQ
-			</button>
+			<a href={`/product/${product?.slug}?variant=${selectedVariantId}&tab=reviews`}>
+				<button type="button" class="{tab === 'reviews' ? 
+					"whitespace-nowrap p-3 pr-4 mr-4 border-b-2 font-medium border-lime-600" : 
+					"whitespace-nowrap p-3 pr-4 mr-4 text-gray-500 hover:text-gray-700 border-b border-gray-300 hover:border-b-2 hover:border-gray-300"}">
+					Customer Reviews
+				</button>
+			</a>
+			<a href={`/product/${product?.slug}?variant=${selectedVariantId}&tab=faq`}>
+				<button type="button" class="{tab === 'faq' ? 
+					"whitespace-nowrap p-3 px-4 mr-4 border-b-2 font-medium border-lime-600" : 
+					"whitespace-nowrap p-3 px-4 mr-4 text-gray-500 hover:text-gray-700 border-b border-gray-300 hover:border-b-2 hover:border-gray-300"}">
+					FAQ
+				</button>
+			</a>
 		</div>
 		{#if tab == 'reviews'}
 			<!-- <ProductReviews bind:reviewForm={data.reviewForm} {product} {user} {reviews} /> -->

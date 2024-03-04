@@ -1165,10 +1165,10 @@
   resolved "https://registry.yarnpkg.com/@kamilkisiela/fast-url-parser/-/fast-url-parser-1.1.4.tgz#9d68877a489107411b953c54ea65d0658b515809"
   integrity sha512-gbkePEBupNydxCelHCESvFSFM8XPh1Zs/OAVRW/rKpEqPAl5PbOM90Si8mv9bvnR53uPD2s/FiRxdvSejpRJew==
 
-"@melt-ui/svelte@^0.75.1":
-  version "0.75.1"
-  resolved "https://registry.yarnpkg.com/@melt-ui/svelte/-/svelte-0.75.1.tgz#73c8be8f7f10735837f0a71e1b4c940d245fde41"
-  integrity sha512-wa8b5sQBlzh2BS0mfcJQOnKZzxZ7vQ8Nw8XLfD7I8SXu/dTbYiJZNAHKRHKaFBT8V/RUw1YRGadR0bovXX4m6Q==
+"@melt-ui/svelte@^0.75.2":
+  version "0.75.2"
+  resolved "https://registry.yarnpkg.com/@melt-ui/svelte/-/svelte-0.75.2.tgz#3b0e7cafe7e3c3f1405fb41645d6d23623c6ad66"
+  integrity sha512-EZYH5iEzHs/CPsWqRlH6AnJ70sTuPB4llVK3ajafWig6I5q3qyGU8NIz4aozUssL0edf9BKmyDVAy6Vksy1fbA==
   dependencies:
     "@floating-ui/core" "^1.3.1"
     "@floating-ui/dom" "^1.4.5"
@@ -4520,10 +4520,10 @@ svelte-hmr@^0.15.3:
   resolved "https://registry.yarnpkg.com/svelte-hmr/-/svelte-hmr-0.15.3.tgz#df54ccde9be3f091bf5f18fc4ef7b8eb6405fbe6"
   integrity sha512-41snaPswvSf8TJUhlkoJBekRrABDXDMdpNpT2tfHIv4JuhgvHqLMhEPGtaQn0BmbNSTkuz2Ed20DF2eHw0SmBQ==
 
-svelte-meta-tags@^3.0.4:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/svelte-meta-tags/-/svelte-meta-tags-3.1.0.tgz#80fc0f9ef81ab8f9ace7260a3ecb88153efebe48"
-  integrity sha512-wFBfpktSua1R5rdvQ/aFucvXmRqzDhRYrPpMQ/pL4+KL5QHIzomPf29a5WN3yDR0reSy1PXyQ2ah0+uCYCbi0g==
+svelte-meta-tags@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/svelte-meta-tags/-/svelte-meta-tags-3.1.1.tgz#6384a3a291ab95c8ce79b2087158883f2965aca5"
+  integrity sha512-tSWU1xbRGV5rkDN4wWXZfY24BRuhPa3Z8W2Zpt3GCv01QQdWRhhgmlpYVdfoSPNQX060bDB/JM1cu4H+lXxe8w==
   dependencies:
     schema-dts "^1.1.2"
 
