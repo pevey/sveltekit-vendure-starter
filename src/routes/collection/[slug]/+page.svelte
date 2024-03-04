@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { PageData } from './$types'
 	import { getContextClient, queryStore } from '@urql/svelte'
 	import { useFragment } from '$lib/gql'
 	import { page } from '$app/stores'
@@ -6,15 +7,18 @@
 	import VendureAsset from '$lib/components/VendureAsset.svelte'
 	import MetaTags from '$lib/components/MetaTags.svelte'
 
-	$: slug = $page.params.slug
+	export let data: PageData
 
+	$: slug = $page.params.slug
+	let collection = useFragment(Collection, data.result?.collection) || null
+	let products = useFragment(SearchResult, data.result?.search?.items) || []
 	$: collectionQuery = queryStore({
 		client: getContextClient(),
 		query: GetCollection,
 		variables: { slug }
 	})
-	$: collection = useFragment(Collection, $collectionQuery.data?.collection) || null
-	$: products = useFragment(SearchResult, $collectionQuery.data?.search?.items) || []
+	$: collection = useFragment(Collection, $collectionQuery.data?.collection) || collection
+	$: products = useFragment(SearchResult, $collectionQuery.data?.search?.items) || products
 
 </script>
 <MetaTags title={collection?.name} description={collection?.description} />

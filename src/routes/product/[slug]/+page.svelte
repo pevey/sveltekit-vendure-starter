@@ -5,8 +5,6 @@
 	import { queryParam } from 'sveltekit-search-params'
 	import { toast } from 'svoast'
 	import { page } from '$app/stores'
-	import { enhance } from '$app/forms'  
-	import { invalidateAll } from '$app/navigation'
 	import { formatCurrency } from '$lib/utils'
 	import { useFragment } from '$lib/gql'
 	import { AddItemToOrder, GetProduct, ProductDetail } from '$lib/vendure'
@@ -19,22 +17,22 @@
 	import { PUBLIC_DEFAULT_CURRENCY } from '$env/static/public'
 
 	export let data: PageData
-	let reviewForm = data.reviewForm
+
 	const client = getContextClient()
-	let processing = false
 
 	$: slug = $page.params.slug
-
-	$: productQuery = queryStore({
-		client,
-		query: GetProduct,
-		variables: { slug }
-	})
-	$: product = useFragment(ProductDetail, $productQuery.data?.product) || null
+	let product = useFragment(ProductDetail, data.product)
+	let selectedVariantId = product?.variants[0]?.id || ''
 	$: selectedVariantId = product?.variants[0]?.id || ''
 	// $: reviews = product?.reviews || []
+	$: productQuery = queryStore({
+			client,
+			query: GetProduct,
+			variables: { slug }
+		})
+	$: product = useFragment(ProductDetail, $productQuery?.data?.product) || product
 
-	// $: user = data.user as Customer
+	let processing = false
 	let tab: string = 'reviews'
 
 	const addToCart = async (variantId: string): Promise<void> => {

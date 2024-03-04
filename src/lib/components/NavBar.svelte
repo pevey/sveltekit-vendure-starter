@@ -1,21 +1,12 @@
 <script lang="ts">
-	import { queryStore, getContextClient } from '@urql/svelte'
-	import { useFragment } from '$lib/gql'
-	import { Collection, GetTopLevelCollections } from '$lib/vendure'
+	import { type FragmentType, useFragment } from '$lib/gql'
+	import { Collection } from '$lib/vendure'
 	import Cart from '$lib/components/Cart.svelte'
 	import Account from '$src/lib/components/Account.svelte'
 	import SearchBox from '$lib/components/SearchBox.svelte'
 	import SideBar from '$lib/components/SideBar.svelte'
 	import ThemeSwitcher from './ThemeSwitcher.svelte'
-
-	const client = getContextClient()
-
-	$: collectionsQuery = queryStore({
-			client,
-			query: GetTopLevelCollections
-	})
-	$: collections = $collectionsQuery.data?.collections?.items || []
-
+	export let collections: FragmentType<typeof Collection>[] = []
 </script>
 <nav class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 bg-transparent">
 	<div class="flex flex-grow items-center justify-between mt-3">

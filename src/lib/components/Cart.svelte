@@ -83,7 +83,7 @@
                                  <p class="mt-1 text-sm">Facet Values will go here</p>
                               </a>
                               <div>
-                                 <p class="ml-4 text-sm font-medium text-gray-900">{formatCurrency(line.unitPrice, PUBLIC_DEFAULT_CURRENCY)}</p>
+                                 <p class="ml-4 text-sm font-medium">{formatCurrency(line.unitPrice, PUBLIC_DEFAULT_CURRENCY)}</p>
                                  <p class="ml-4 text-sm text-right">Qty: {line.quantity}</p>
                               </div>
                            </div>
@@ -93,9 +93,9 @@
                               return async ({ result }) => { 
                                     if (result.type === 'success') invalidateAll()
                               }}}>
-                              <select name="quantity" class="text-sm font-medium rounded-lg focus:ring-gray-700 focus:border-none" on:change="{async(e) => updateQuantity(e)}">
+                              <select name="quantity" class="text-sm font-medium rounded-lg focus:ring-gray-700 focus:border-none text-black" on:change="{async(e) => updateQuantity(e)}">
                                     {#each [1,2,3,4,5,6,7,8,9,10,11,12] as qty}
-                                    <option value={qty} selected={qty === line.quantity}>{qty}</option>
+                                    <option value={qty} selected={qty === line.quantity} class="text-sm text-black">{qty}</option>
                                     {/each}
                               </select>
                               <input type="hidden" name="orderLineId" value={line.id} />

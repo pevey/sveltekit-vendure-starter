@@ -14,6 +14,7 @@
 
 	export let data: PageData
 	const client = data.client
+	const collections = data.collections
 
 	const nakedPaths = ['/auth', '/checkout', '/sitemap.xml']
 	$: naked = nakedPaths.includes($page.url.pathname)
@@ -48,7 +49,7 @@
 {#if naked}
 	<slot />
 {:else}
-	<NavBar />
+	<NavBar {collections} />
 	<slot />
 	<Footer />
 {/if}

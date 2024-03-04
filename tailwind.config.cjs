@@ -5,7 +5,7 @@ import forms from '@tailwindcss/forms'
 /** @type {import('tailwindcss').Config}*/
 const config = {
 	content: ["./src/**/*.{html,js,svelte,ts}"],
-	darkMode: 'class',
+	darkMode: 'selector',
 	theme: {
 		extend: {
 			colors: {
