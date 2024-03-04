@@ -68,7 +68,7 @@
 							{variant.name}
 						</button>
 					{:else}
-					<button type="button" on:click={() => { selectedVariantId = variant.id }} class="uppercase whitespace-nowrap px-3 py-2 mr-2 mb-2 rounded-lg text-sm font-medium border border-gray-400 hover:bg-stone-200 dark:hover:bg-stone-800">
+					<button type="button" on:click={() => { selectedVariantId = variant.id }} class="uppercase whitespace-nowrap px-3 py-2 mr-2 mb-2 rounded-lg text-sm font-medium border border-gray-400 hover:bg-stone-200 dark:hover:bg-stone-700">
 						{variant.name}
 						</button>
 					{/if}
