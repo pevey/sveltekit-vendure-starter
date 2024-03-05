@@ -18,6 +18,7 @@
 
 	export let data: PageData
 
+	const client = getContextClient()
 	$: slug = $page.params.slug
 	$: queryParams = queryParameters()
 	$: tab = $queryParams?.tab || 'reviews'
@@ -28,7 +29,7 @@
 	$: selectedVariantId = $queryParams?.variant || product?.variants[0]?.id || ''
 	
 	// these two enable the client to take over data fetching after the initial render
-	$: productQuery = queryStore({ client: getContextClient(), query: GetProduct, variables: { slug } })
+	$: productQuery = queryStore({ client, query: GetProduct, variables: { slug } })
 	$: { if ($productQuery?.data?.product) product = useFragment(ProductDetail, $productQuery.data.product) }
 
 	// Reviews have to be enabled first on the Vendure backend
@@ -38,7 +39,7 @@
 
 	const addToCart = async (variantId: string): Promise<void> => {
 		processing = true
-		const result = await getContextClient().mutation(AddItemToOrder, { variantId: variantId, quantity: 1 }).toPromise()
+		const result = await client.mutation(AddItemToOrder, { variantId: variantId, quantity: 1 }).toPromise()
 		if (result.error) toast.error('Error adding item to cart')
 		else if (result.data) toast.success('Item added to cart')
 		processing = false
