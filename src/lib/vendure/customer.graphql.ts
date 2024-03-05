@@ -2,8 +2,8 @@ import { gql } from '$lib/gql'
 
 export const Customer = gql(`
 	fragment Customer on Customer {
+		__typename
 		id
-		title
 		firstName
 		lastName
 		emailAddress
@@ -39,11 +39,10 @@ export const GetCustomer = gql(`
 `)
 
 export const SignIn = gql(`
-	mutation LogIn($emailAddress: String!, $password: String!, $rememberMe: Boolean!) {
-		login(username: $emailAddress, password: $password, rememberMe: $rememberMe) {
-			... on  CurrentUser {
+	mutation LogIn($username: String!, $password: String!, $rememberMe: Boolean!) {
+		login(username: $username, password: $password, rememberMe: $rememberMe) {
+			... on CurrentUser {
 				id
-				identifier
 			}
 			... on ErrorResult {
 				errorCode
@@ -122,7 +121,6 @@ export const ResetPassword = gql(`
 export const GetCustomerOrders = gql(`
 	query GetCustomerOrders {
 		activeCustomer {
-			id
 			orders {
 				items {
 					...Order
@@ -136,7 +134,6 @@ export const GetCustomerOrders = gql(`
 export const GetCustomerAddresses = gql(`
 	query GetCustomerAddresses {
 		activeCustomer {
-			id
 			addresses {
 				...Address
 			}

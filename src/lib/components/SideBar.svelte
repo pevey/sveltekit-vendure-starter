@@ -4,9 +4,9 @@
 	import { fade, fly } from 'svelte/transition'
 	import { type FragmentType, useFragment } from '$lib/gql'
 	import { Collection, Customer } from '$lib/vendure'
-	import { user } from '$lib/stores'
+	import { userStore } from '$lib/stores'
 	export let collections: FragmentType<typeof Collection>[]
-	$: customer = $user
+	$: me = $userStore
 	const { 
 		elements: { trigger, portalled, overlay, content, close },
 		states: { open, } 
@@ -43,7 +43,7 @@
 								</span>
 							</a>
 						{/each}
-						{#if customer}
+						{#if me}
 							<a href="/account" use:close class="py-2 px-3 mr-2 mt-12 rounded-md font-medium text-lg">Your Profile</a>
 							<form action="/auth?/signOut" method="POST">
 								<button type="submit" class="py-2 px-3 mr-2 rounded-md font-medium text-lg">Sign Out</button>

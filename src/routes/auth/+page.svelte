@@ -1,50 +1,83 @@
 <script lang="ts">
 	import type { PageData } from './$types'
-	import { page } from '$app/stores'
-	import { goto, invalidateAll } from '$app/navigation'
 	import { Turnstile } from 'sveltekit-turnstile'
-	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public'
-	import { superForm } from 'sveltekit-superforms'
-	import { zodClient } from 'sveltekit-superforms/adapters'
+	import { setMessage, superForm } from 'sveltekit-superforms'
+	import { zod } from 'sveltekit-superforms/adapters'
 	import { Field, Control, Label, FieldErrors } from 'formsnap'
+	import { queryParam } from 'sveltekit-search-params'
+	import { getContextClient, setContextClient } from '@urql/svelte'
+	import { page } from '$app/stores'
+	import { goto } from '$app/navigation'
+	import { 
+		createClient,
+		GetActiveOrder, 
+		GetCustomer, 
+		SignIn, 
+		SignOut, 
+		SignUp, 
+		ResetPassword, 
+		RequestPasswordReset 
+	} from '$lib/vendure'
 	import { signInReq, signUpReq, forgotReq, resetReq } from '$lib/validators'
+	import { cartStore, userStore } from '$lib/stores'
 	import AuthContainer from '$lib/components/AuthContainer.svelte'
 	import ShowHideIcon from '$lib/components/ShowHideIcon.svelte'
 	import AppleButton from '$lib/components/AppleButton.svelte'
+	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public'
+    import { get } from 'svelte/store';
 
 	export let data: PageData
 
+	if ($userStore) goto('/')
+
 	type state = 'signIn' | 'signUp' | 'forgot' | 'reset'
-	let state = data.code? 'reset' : 'signIn'
+	const code = queryParam('token') // reset code
+	let state = $code? 'reset' : 'signIn'
 	let token: string = '' // turnstile token
-	let code: string = data.code // reset code
 	let reveal: boolean = false
 	let processing: boolean = false
-
-	const handleSignIn = async function() {
-		await invalidateAll()
-		await goto(data.rurl? data.rurl : '/')
+	
+	const redirect = async function(rurl: string = '') {
+		// await goto(data.rurl? data.rurl : '/')
+		window.location.href = `/${rurl}`
 	}
 
+	let client = getContextClient()
+
 	const signInForm = superForm(data.signInForm, { 
-			validators: zodClient(signInReq),
-			onSubmit: () => {
+			SPA: true,
+			validators: zod(signInReq),
+			onUpdate: async ({ form, cancel }) => {
 				processing = true
-			},
-			onResult: ({ result }) => {
-				if (result.type === 'success') {
-					handleSignIn()
+				if (form.valid) {
+					const loginResult = await client.mutation(SignIn, { username: form.data.email.toLowerCase(), password: form.data.password, rememberMe: false }).toPromise()
+			console.log(loginResult?.data?.login?.__typename)
+					if (loginResult?.data?.login?.__typename === 'InvalidCredentialsError') {
+						setMessage(form, 'The email or password you entered is incorrect.')
+						token = ''
+						processing = false
+					} else  {
+						client = createClient()
+						const orderResult = await client.query(GetActiveOrder, {}).toPromise()
+						if (orderResult?.data?.activeOrder) cartStore.set(orderResult.data.activeOrder)
+						const customerResult = await client.query(GetCustomer, {}).toPromise()
+						if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
+						redirect()
+					}
+
 				} else {
-					token = ''
+					setMessage(form, 'Form is invalid')
+					// token = ''
 					processing = false
 				}
-			}
+			},
 		})
 	const { form: signInFormData, enhance: signInEnhance, message: signInMessage } = signInForm
 	$: $signInFormData.token = token
 
 	const signUpForm = superForm(data.signUpForm, { 
-			validators: zodClient(signUpReq),
+			SPA: true,
+			validators: zod(signUpReq),
 			onSubmit: () => {
 				processing = true
 			},
@@ -62,7 +95,8 @@
 	$: $signUpFormData.token = token
 
 	const forgotForm = superForm(data.forgotForm, { 
-			validators: zodClient(forgotReq),
+			SPA: true,
+			validators: zod(forgotReq),
 			onSubmit: () => {
 				processing = true
 			},
@@ -75,7 +109,8 @@
 	$: $forgotFormData.token = token
 
 	const resetForm = superForm(data.resetForm, { 
-			validators: zodClient(resetReq),
+			SPA: true,
+			validators: zod(resetReq),
 			onSubmit: () => {
 				processing = true
 			},
@@ -86,7 +121,7 @@
 		})
 	const { form: resetFormData, enhance: resetEnhance, message: resetMessage } = resetForm
 	$: $resetFormData.token = token
-	$: $resetFormData.code = code
+	$: $resetFormData.code = $code || ''
 
 </script>
 <AuthContainer>
@@ -101,7 +136,7 @@
 		{#if processing}
 			<div class="message">Processing...</div>
 		{:else}
-			<form method="POST" action="/auth?/signIn" use:signInEnhance>
+			<form method="POST" use:signInEnhance>
 				<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Sign In to Your Account</h3>
 				{#if $signInMessage}
 					<div class="message" class:text-red-600={$page.status > 200}>{$signInMessage}</div>
@@ -150,7 +185,7 @@
 		{/if}
 
 	{:else if state === 'signUp'}
-		<form method="POST" action="/auth?/signUp" use:signUpEnhance>
+		<form method="POST" use:signUpEnhance>
 			<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Create an Account</h3>
 			<p class="text-lg text-gray-500 mb-6">Welcome! To create an account, please enter your email and choose a password below.</p>
 			<Field form={signUpForm} name="token">
@@ -203,7 +238,7 @@
 		</form>
 
 	{:else if state === 'forgot'}
-		<form method="POST" action="/auth?/forgot" use:forgotEnhance>
+		<form method="POST" use:forgotEnhance>
 			<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Reset Your Password</h3>
 			<p class="text-lg text-gray-500 mb-6">Enter your email address to receive an email with a link to change your password.</p>
 			<Field form={forgotForm} name="token">
@@ -227,7 +262,7 @@
 		</form>
 
 	{:else if state === 'reset'}
-		<form method="POST" action="/auth?/reset" use:resetEnhance>
+		<form method="POST" use:resetEnhance>
 			<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Choose a New Password</h3>
 			<Field form={resetForm} name="token">
 				<Control let:attrs>

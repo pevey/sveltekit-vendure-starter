@@ -7,10 +7,10 @@
 	import SearchHit from '$lib/components/SearchHit.svelte'
 
 	const q = queryParam('q')
-
+	let hits: any = []
 	const client = getContextClient()
 	$: resultStore = queryStore({ client, query: SearchProducts, variables: { input: { term: $q, take: 10, skip: 0, groupByProduct: true } }, pause: !$q })
-	$: hits = useFragment(SearchResult, $resultStore?.data?.search?.items) || []
+	$: { if ($resultStore.data?.search?.items) hits = useFragment(SearchResult, $resultStore.data.search.items) }
 
 	const handleClick = function(e: any) {
 		$q = ''

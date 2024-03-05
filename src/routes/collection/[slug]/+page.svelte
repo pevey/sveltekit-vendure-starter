@@ -8,23 +8,25 @@
 	import MetaTags from '$lib/components/MetaTags.svelte'
 
 	export let data: PageData
-
+	
 	$: slug = $page.params.slug
+
 	// these two will always be set from our PageData to enable SSR or SSG
 	let collection = useFragment(Collection, data.result?.collection) || null
 	let products = useFragment(SearchResult, data.result?.search?.items) || []
+	
 	// these three enable the client to take over data fetching after the initial render
 	$: collectionQuery = queryStore({ client: getContextClient(), query: GetCollection, variables: { slug } })
-	$: collection = useFragment(Collection, $collectionQuery.data?.collection) || collection
-	$: products = useFragment(SearchResult, $collectionQuery.data?.search?.items) || products
+	$: { if ($collectionQuery?.data?.collection) collection = useFragment(Collection, $collectionQuery.data.collection) || collection }
+	$: { if ($collectionQuery?.data?.search?.items) products = useFragment(SearchResult, $collectionQuery.data.search.items) || products }
 </script>
 <MetaTags title={collection?.name} description={collection?.description} />
-<section class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-	<h1 class="text-2xl sm:text-3xl font-bold tracking-tight my-4 sm:my-6">{collection?.name}</h1>
+<section class="mx-auto max-w-screen-2xl p-4 sm:p-6 lg:p-8">
+	<!-- <h1 class="text-2xl sm:text-3xl font-bold tracking-tight my-4 sm:my-6">{collection?.name}</h1> -->
 	<section class="relative hidden sm:block sm:h-80 lg:h-96 w-full mb-8 sm:mb-16">
 		<VendureAsset preview={collection?.featuredAsset?.preview} preset="large" alt={collection?.name} class="absolute object-cover w-full h-full rounded-md"/>
 		<div class="absolute inset-0 bg-black/30 flex items-center justify-center rounded-md">
-			<h1 class="text-3xl font-bold text-white">{collection?.name}</h1>
+			<h1 class="text-2xl sm:text-4xl font-bold text-white">{collection?.name}</h1>
 		</div>
 	</section>
 	<div class="mx-auto max-w-screen-2xl">

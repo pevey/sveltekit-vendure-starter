@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { UserCircle2 } from 'lucide-svelte'
 	import { createDropdownMenu } from '@melt-ui/svelte'
-	import { user } from '$lib/stores'
+	import { userStore } from '$lib/stores'
 
-	$: customer = $user
+	$: me = $userStore
 
 	const { 
 		elements: { trigger, menu, item }
@@ -13,7 +13,7 @@
 		preventScroll: false,
 	})
 </script>
-{#if customer}
+{#if me}
 	<button type="button" {...$trigger} use:trigger aria-label="Open account menu" class="align-middle items-center grow-on-hover">
 		<span class="sr-only">View account</span>
 		<UserCircle2 class="h-9 w-9" />

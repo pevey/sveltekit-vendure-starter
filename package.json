@@ -3,15 +3,15 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "concurrently 'vite dev' 'yarn generate --watch'",
-		"build": "shx rm -rf ./build && yarn generate && vite build",
+		"dev": "concurrently 'vite dev' 'yarn codegen --watch'",
+		"build": "shx rm -rf ./build && yarn codegen && vite build",
 		"preview": "vite preview",
 		"test": "yarn test:integration && yarn test:unit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"generate": "graphql-codegen"
+		"codegen": "graphql-codegen"
 	},
 	"devDependencies": {
 		"@graphql-codegen/cli": "^5.0.2",

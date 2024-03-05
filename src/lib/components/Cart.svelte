@@ -6,23 +6,23 @@
 	import { fade, fly } from 'svelte/transition'
 	import { useFragment } from '$lib/gql'
 	import { ActiveOrder, AdjustOrderLine, RemoveOrderLine } from '$lib/vendure'
-	import { cart } from '$lib/stores'
+	import { cartStore } from '$lib/stores'
 	import { formatCurrency } from '$lib/utils'
 	import VendureAsset from '$lib/components/VendureAsset.svelte'
 	import { PUBLIC_DEFAULT_CURRENCY } from '$env/static/public'
 
-	$: lines = useFragment(ActiveOrder, $cart)?.lines || []
-	$: total = useFragment(ActiveOrder, $cart)?.subTotal || 0
+	$: lines = useFragment(ActiveOrder, $cartStore)?.lines || []
+	$: total = useFragment(ActiveOrder, $cartStore)?.subTotal || 0
 	$: count = lines.length
 	
 	const client = getContextClient()
 	let processing = false
 	
 	const adjustOrderLine = async (orderLineId: string, e: Event) => {
-		const target = e.target as HTMLSelectElement
-		const quantity = +target.value
 		if (processing) return
 		processing = true
+		const target = e.target as HTMLSelectElement
+		const quantity = +target.value
 		const result = await client.mutation(AdjustOrderLine, { orderLineId: orderLineId, quantity: quantity }).toPromise()
 		if (result.error) toast.error('Error updating cart')
 		else if (result.data) toast.success('Cart updated')
@@ -95,7 +95,7 @@
 											<p class="mt-1 text-sm">Facet Values will go here</p>
 										</a>
 										<div>
-											<p class="ml-4 text-sm font-medium">{formatCurrency(line.unitPrice, PUBLIC_DEFAULT_CURRENCY)}</p>
+											<p class="ml-4 text-sm font-medium">{formatCurrency(line.linePrice, PUBLIC_DEFAULT_CURRENCY)}</p>
 											<p class="ml-4 text-sm text-right">Qty: {line.quantity}</p>
 										</div>
 									</div>
