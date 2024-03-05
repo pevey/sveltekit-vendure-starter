@@ -19,7 +19,7 @@
 		RequestPasswordReset 
 	} from '$lib/vendure'
 	import { signInReq, signUpReq, forgotReq, resetReq } from '$lib/validators'
-	import { cartStore, userStore } from '$lib/stores'
+	import { cartStore, userStore, themeStore } from '$lib/stores'
 	import AuthContainer from '$lib/components/AuthContainer.svelte'
 	import ShowHideIcon from '$lib/components/ShowHideIcon.svelte'
 	import AppleButton from '$lib/components/AppleButton.svelte'
@@ -32,7 +32,8 @@
 	type state = 'signIn' | 'signUp' | 'forgot' | 'reset'
 	const code = queryParam('token') // reset code
 	let state = $code? 'reset' : 'signIn'
-	let token: string = '' // turnstile token
+	// let token: string = '' // turnstile token
+	let token: string = 'abc'
 	let reveal: boolean = false
 	let processing: boolean = false
 	
@@ -41,7 +42,7 @@
 		window.location.href = `/${rurl}`
 	}
 
-	let client = getContextClient()
+	const client = getContextClient()
 
 	const signInForm = superForm(data.signInForm, { 
 			SPA: true,
@@ -63,10 +64,9 @@
 					// 	token = ''
 					// 	processing = false
 					} else if (loginResult?.data?.login?.__typename === 'CurrentUser') {
-						client = createClient()
-						const orderResult = await client.query(GetActiveOrder, {}).toPromise()
+						const orderResult = await client.query(GetActiveOrder, {}, { requestPolicy: 'network-only' }).toPromise()
 						if (orderResult?.data?.activeOrder) cartStore.set(orderResult.data.activeOrder)
-						const customerResult = await client.query(GetCustomer, {}).toPromise()
+						const customerResult = await client.query(GetCustomer, {}, { requestPolicy: 'network-only'} ).toPromise()
 						if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
 						redirect()
 					} else {
@@ -133,14 +133,15 @@
 
 </script>
 <AuthContainer>
-	{#if !token}
+	<!-- {#if !token}
 		<Turnstile 
-			theme="light" 
+			theme={$themeStore?.theme || 'light'} 
 			siteKey={PUBLIC_TURNSTILE_SITE_KEY} 
 			on:turnstile-callback={(e) => { token = e.detail.token }}
 		/>
 
-	{:else if state === 'signIn'}
+	{:else if state === 'signIn'} -->
+	{#if state === 'signIn'}
 		{#if processing}
 			<div class="message">Processing...</div>
 		{:else}

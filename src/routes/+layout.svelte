@@ -7,7 +7,7 @@
 	import { page } from '$app/stores'
 	import { browser } from '$app/environment'
 	import { type FragmentType } from '$lib/gql'
-	import { createClient, ActiveOrder, GetActiveOrder, Customer, GetCustomer } from '$lib/vendure'
+	import { ActiveOrder, GetActiveOrder, Customer, GetCustomer } from '$lib/vendure'
 	import { cartStore, userStore } from '$lib/stores'
 	import Theme from '$lib/components/Theme.svelte'
 	import NavBar from '$lib/components/NavBar.svelte'
@@ -15,7 +15,7 @@
 
 	export let data: PageData
 
-	const client = createClient()
+	const client = data.client
 	setContextClient(client)
 	
 	const collections = data.collections

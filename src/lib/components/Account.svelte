@@ -31,9 +31,9 @@
 		<a href="/account">Your Profile</a>
 	</div>
 	<div {...$item} use:item class="item">
-		<form method="POST" action="/auth?/signOut">
-			<button type="submit">Sign Out</button>
-		</form>
+		<a href="/auth/signout">
+			<button type="button">Sign Out</button>
+		</a>
 	</div>
 </div>
 <style lang="postcss">
