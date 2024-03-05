@@ -4,8 +4,8 @@ import { browser } from '$app/environment'
 import { SignOut } from '$lib/vendure'
 
 export const load = (async ({ parent }) => {
-	const { client } = await parent()
 	if (browser) {
+		const { client } = await parent()
 		const result = await client.mutation(SignOut, {}).toPromise()
 		// TODO: handle error
 		console.log(result)
