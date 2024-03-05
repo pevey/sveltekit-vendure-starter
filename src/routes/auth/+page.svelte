@@ -5,7 +5,7 @@
 	import { zod } from 'sveltekit-superforms/adapters'
 	import { Field, Control, Label, FieldErrors } from 'formsnap'
 	import { queryParam } from 'sveltekit-search-params'
-	import { getContextClient, setContextClient } from '@urql/svelte'
+	import { getContextClient } from '@urql/svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
 	import { 
@@ -24,7 +24,6 @@
 	import ShowHideIcon from '$lib/components/ShowHideIcon.svelte'
 	import AppleButton from '$lib/components/AppleButton.svelte'
 	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public'
-    import { get } from 'svelte/store';
 
 	export let data: PageData
 
@@ -47,27 +46,36 @@
 	const signInForm = superForm(data.signInForm, { 
 			SPA: true,
 			validators: zod(signInReq),
-			onUpdate: async ({ form, cancel }) => {
+			onUpdate: async ({ form }) => {
 				processing = true
 				if (form.valid) {
 					const loginResult = await client.mutation(SignIn, { username: form.data.email.toLowerCase(), password: form.data.password, rememberMe: false }).toPromise()
-			console.log(loginResult?.data?.login?.__typename)
 					if (loginResult?.data?.login?.__typename === 'InvalidCredentialsError') {
 						setMessage(form, 'The email or password you entered is incorrect.')
 						token = ''
 						processing = false
-					} else  {
+					} else if (loginResult?.data?.login?.__typename === 'NotVerifiedError') {
+						setMessage(form, 'Your account has not been verified. Please check your email for a verification link.')
+						token = ''
+						processing = false
+					// } else if (loginResult?.data?.login?.__typename === 'TooManyFailedAttemptsError') {
+					// 	setMessage(form, 'Too many failed attempts. Please try again later.')
+					// 	token = ''
+					// 	processing = false
+					} else if (loginResult?.data?.login?.__typename === 'CurrentUser') {
 						client = createClient()
 						const orderResult = await client.query(GetActiveOrder, {}).toPromise()
 						if (orderResult?.data?.activeOrder) cartStore.set(orderResult.data.activeOrder)
 						const customerResult = await client.query(GetCustomer, {}).toPromise()
 						if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
 						redirect()
+					} else {
+						setMessage(form, 'An unknown error occurred. Please try again.')
+						token = ''
+						processing = false
 					}
-
 				} else {
-					setMessage(form, 'Form is invalid')
-					// token = ''
+					setMessage(form, 'Please correct the errors below.')
 					processing = false
 				}
 			},
