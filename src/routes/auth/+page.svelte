@@ -33,9 +33,11 @@
 	const code = queryParam('token') // reset code
 	let state = $code? 'reset' : 'signIn'
 	// let token: string = '' // turnstile token
-	let token: string = 'abc'
+	let token: string = ''
+	if (!PUBLIC_TURNSTILE_SITE_KEY) token = Math.floor(Math.random() * 1000000).toString()
 	let reveal: boolean = false
 	let processing: boolean = false
+	let success: boolean = false
 	
 	const redirect = async function(rurl: string = '') {
 		// await goto(data.rurl? data.rurl : '/')
@@ -51,34 +53,29 @@
 				processing = true
 				if (form.valid) {
 					const loginResult = await client.mutation(SignIn, { username: form.data.email.toLowerCase(), password: form.data.password, rememberMe: false }).toPromise()
-					if (loginResult?.data?.login?.__typename === 'InvalidCredentialsError') {
-						setMessage(form, 'The email or password you entered is incorrect.')
-						token = ''
-						processing = false
-					} else if (loginResult?.data?.login?.__typename === 'NotVerifiedError') {
-						setMessage(form, 'Your account has not been verified. Please check your email for a verification link.')
-						token = ''
-						processing = false
-					// } else if (loginResult?.data?.login?.__typename === 'TooManyFailedAttemptsError') {
-					// 	setMessage(form, 'Too many failed attempts. Please try again later.')
-					// 	token = ''
-					// 	processing = false
-					} else if (loginResult?.data?.login?.__typename === 'CurrentUser') {
+					if (loginResult?.data?.login?.__typename === 'CurrentUser') {
 						const orderResult = await client.query(GetActiveOrder, {}, { requestPolicy: 'network-only' }).toPromise()
 						if (orderResult?.data?.activeOrder) cartStore.set(orderResult.data.activeOrder)
 						const customerResult = await client.query(GetCustomer, {}, { requestPolicy: 'network-only'} ).toPromise()
 						if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
 						redirect()
 					} else {
-						setMessage(form, 'An unknown error occurred. Please try again.')
-						token = ''
-						processing = false
+						if (loginResult?.data?.login?.__typename === 'InvalidCredentialsError') {
+							setMessage(form, 'The email or password you entered is incorrect.')
+						} else if (loginResult?.data?.login?.__typename === 'NotVerifiedError') {
+							setMessage(form, 'Your account has not been verified. Please check your email for a verification link.')
+					// } else if (loginResult?.data?.login?.__typename === 'TooManyFailedAttemptsError') {
+					// 	setMessage(form, 'Too many failed attempts. Please try again later.')
+						} else {
+							setMessage(form, 'An unknown error occurred. Please try again.')
+						}
 					}
 				} else {
 					setMessage(form, 'Please correct the errors below.')
-					processing = false
 				}
-			},
+				if (PUBLIC_TURNSTILE_SITE_KEY) token = ''
+				processing = false
+			}
 		})
 	const { form: signInFormData, enhance: signInEnhance, message: signInMessage } = signInForm
 	$: $signInFormData.token = token
@@ -86,17 +83,30 @@
 	const signUpForm = superForm(data.signUpForm, { 
 			SPA: true,
 			validators: zod(signUpReq),
-			onSubmit: () => {
+			onUpdate: async ({ form }) => {
 				processing = true
-			},
-			onResult: ({ result }) => {
-				if (result.type === 'success') {
-					// handleSignIn()
-					// verify email
+				success = false
+				if (form.valid) {
+					const registerResult = await client.mutation(SignUp, { input: { 
+						emailAddress: form.data.email.toLowerCase(), 
+						password: form.data.password, 
+						firstName: form.data.fname, 
+						lastName: form.data.lname } }).toPromise()
+					if (registerResult?.data?.registerCustomerAccount?.__typename === 'Success') {
+						setMessage(form, 'Your account has been created. Please check your email for a verification link.')
+						success = true
+					} else {
+						if (registerResult?.data?.registerCustomerAccount?.__typename === 'PasswordValidationError') {
+							setMessage(form, 'The password entered is not a strong password.  Please try again.')
+						} else {
+							setMessage(form, 'An unknown error occurred. Please try again.')
+						}
+					}
 				} else {
-					token = ''
-					processing = false
+					setMessage(form, 'Please correct the errors below.')
 				}
+				if (PUBLIC_TURNSTILE_SITE_KEY) token = ''
+				processing = false
 			}
 		})
 	const { form: signUpFormData, enhance: signUpEnhance, message: signUpMessage } = signUpForm
@@ -105,11 +115,21 @@
 	const forgotForm = superForm(data.forgotForm, { 
 			SPA: true,
 			validators: zod(forgotReq),
-			onSubmit: () => {
+			onUpdate: async ({ form }) => {
 				processing = true
-			},
-			onResult: () => {
-				token = ''
+				success = false
+				if (form.valid) {
+					const resetResult = await client.mutation(RequestPasswordReset, { emailAddress: form.data.email.toLowerCase() }).toPromise()
+					if (resetResult?.data?.requestPasswordReset?.__typename === 'Success') {
+						setMessage(form, 'An email has been sent with a link to reset your password.')
+						success = true
+					} else {
+						setMessage(form, 'An unknown error occurred. Please try again.')
+					}
+				} else {
+					setMessage(form, 'Please correct the errors below.')
+				}
+				if (PUBLIC_TURNSTILE_SITE_KEY) token = ''
 				processing = false
 			}
 		})
@@ -119,11 +139,29 @@
 	const resetForm = superForm(data.resetForm, { 
 			SPA: true,
 			validators: zod(resetReq),
-			onSubmit: () => {
+			onUpdate: async ({ form }) => {
 				processing = true
-			},
-			onResult: () => {
-				token = ''
+				success = false
+				if (form.valid) {
+					const resetResult = await client.mutation(ResetPassword, { token: form.data.token, code: form.data.code, password: form.data.password }).toPromise()
+					if (resetResult?.data?.resetPassword?.__typename === 'CurrentUser') {
+						setMessage(form, 'Your password has been reset. Please sign in with your new password.')
+						success = true
+					} else {
+						if (resetResult?.data?.resetPassword?.__typename === 'PasswordResetTokenInvalidError') {
+							setMessage(form, 'The reset code entered is incorrect.')
+						} else if (resetResult?.data?.resetPassword?.__typename === 'PasswordResetTokenExpiredError') {
+							setMessage(form, 'The reset code entered has expired.')
+						} else if (resetResult?.data?.resetPassword?.__typename === 'PasswordValidationError') {
+							setMessage(form, 'The password entered is not a strong password.  Please try again.')
+						} else {
+							setMessage(form, 'An unknown error occurred. Please try again.')
+						}
+					}
+				} else {
+					setMessage(form, 'Please correct the errors below.')
+				}
+				if (PUBLIC_TURNSTILE_SITE_KEY) token = ''
 				processing = false
 			}
 		})
@@ -133,15 +171,14 @@
 
 </script>
 <AuthContainer>
-	<!-- {#if !token}
+	{#if !token && PUBLIC_TURNSTILE_SITE_KEY}
 		<Turnstile 
 			theme={$themeStore?.theme || 'light'} 
 			siteKey={PUBLIC_TURNSTILE_SITE_KEY} 
 			on:turnstile-callback={(e) => { token = e.detail.token }}
 		/>
 
-	{:else if state === 'signIn'} -->
-	{#if state === 'signIn'}
+	{:else if state === 'signIn'}
 		{#if processing}
 			<div class="message">Processing...</div>
 		{:else}
@@ -194,110 +231,139 @@
 		{/if}
 
 	{:else if state === 'signUp'}
-		<form method="POST" use:signUpEnhance>
-			<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Create an Account</h3>
-			<p class="text-lg text-gray-500 mb-6">Welcome! To create an account, please enter your email and choose a password below.</p>
-			<Field form={signUpForm} name="token">
-				<Control let:attrs>
-					<input {...attrs} type="hidden" bind:value={$signUpFormData.token} />
-				</Control>
-			</Field>
-			<Field form={signUpForm} name="fname">
-				<Control let:attrs>
-					<Label>First Name</Label>
-					<input {...attrs} bind:value={$signUpFormData.fname} />
-				</Control>
-				<FieldErrors />
-			</Field>
-			<Field form={signUpForm} name="lname">
-				<Control let:attrs>
-					<Label>Last Name</Label>
-					<input {...attrs} bind:value={$signUpFormData.lname} />
-				</Control>
-				<FieldErrors />
-			</Field>
-			<Field form={signUpForm} name="email">
-				<Control let:attrs>
-					<Label>Email</Label>
-					<input {...attrs} bind:value={$signUpFormData.email} />
-				</Control>
-				<FieldErrors />
-			</Field>
-			<Field form={signUpForm} name="password">
-				<Control let:attrs>
-					<Label>Password</Label>
-					<ShowHideIcon bind:reveal={reveal}>
-						{#if reveal}
-							<input {...attrs} type="text" bind:value={$signUpFormData.password} />
-						{:else}
-							<input {...attrs} type="password" bind:value={$signUpFormData.password} />
-						{/if}
-					</ShowHideIcon>
-				</Control>
-				<FieldErrors />
-			</Field>
-			<button type="submit" class="button">Create Account</button>
-			<AppleButton />
-			<div class="text-sm text-gray-900 text-center font-medium">
-				<span>Already have an account?&nbsp;&nbsp;</span>
-				<button type="button" on:click="{() => { state = 'signIn' }}" class="text-orange-900 hover:text-orange-700">
-					Sign In
-				</button>
-			</div>
-		</form>
+		{#if processing}
+			<div class="message">Processing...</div>
+		{:else if success}
+			<div class="message">{$signUpMessage}</div>
+		{:else}
+			<form method="POST" use:signUpEnhance>
+				<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Create an Account</h3>
+				{#if $signUpMessage}
+					<div class="message" class:text-red-600={$page.status > 200}>{$signUpMessage}</div>
+				{:else}
+					<p class="text-lg text-gray-500 mb-6">Welcome! To create an account, please enter your email and choose a password below.</p>
+					<Field form={signUpForm} name="token">
+						<Control let:attrs>
+							<input {...attrs} type="hidden" bind:value={$signUpFormData.token} />
+						</Control>
+					</Field>
+					<Field form={signUpForm} name="fname">
+						<Control let:attrs>
+							<Label>First Name</Label>
+							<input {...attrs} bind:value={$signUpFormData.fname} />
+						</Control>
+						<FieldErrors />
+					</Field>
+					<Field form={signUpForm} name="lname">
+						<Control let:attrs>
+							<Label>Last Name</Label>
+							<input {...attrs} bind:value={$signUpFormData.lname} />
+						</Control>
+						<FieldErrors />
+					</Field>
+					<Field form={signUpForm} name="email">
+						<Control let:attrs>
+							<Label>Email</Label>
+							<input {...attrs} bind:value={$signUpFormData.email} />
+						</Control>
+						<FieldErrors />
+					</Field>
+					<Field form={signUpForm} name="password">
+						<Control let:attrs>
+							<Label>Password</Label>
+							<ShowHideIcon bind:reveal={reveal}>
+								{#if reveal}
+									<input {...attrs} type="text" bind:value={$signUpFormData.password} />
+								{:else}
+									<input {...attrs} type="password" bind:value={$signUpFormData.password} />
+								{/if}
+							</ShowHideIcon>
+						</Control>
+						<FieldErrors />
+					</Field>
+					<button type="submit" class="button">Create Account</button>
+					<AppleButton />
+					<div class="text-sm text-gray-900 text-center font-medium">
+						<span>Already have an account?&nbsp;&nbsp;</span>
+						<button type="button" on:click="{() => { state = 'signIn' }}" class="text-orange-900 hover:text-orange-700">
+							Sign In
+						</button>
+					</div>
+				{/if}
+			</form>
+		{/if}
 
 	{:else if state === 'forgot'}
-		<form method="POST" use:forgotEnhance>
-			<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Reset Your Password</h3>
-			<p class="text-lg text-gray-500 mb-6">Enter your email address to receive an email with a link to change your password.</p>
-			<Field form={forgotForm} name="token">
-				<Control let:attrs>
-					<input {...attrs} type="hidden" bind:value={$forgotFormData.token} />
-				</Control>
-			</Field>
-			<Field form={forgotForm} name="email">
-				<Control let:attrs>
-					<Label>Email</Label>
-					<input {...attrs} bind:value={$forgotFormData.email} />
-				</Control>
-				<FieldErrors />
-			</Field>
-			<button type="submit" class="button">Request Reset Code</button>
-			<div class="pt-6 text-sm text-gray-900 text-center font-medium">
-				<button type="button" on:click="{() => { state = 'signIn' }}" class="text-gray-900 hover:text-orange-700">
-					&larr;&nbsp; Sign In Instead
-				</button>
-			</div>
-		</form>
+		{#if processing}
+			<div class="message">Processing...</div>
+		{:else if success}
+			<div class="message">{$forgotMessage}</div>
+		{:else}
+			<form method="POST" use:forgotEnhance>
+				<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Reset Your Password</h3>
+				{#if $forgotMessage}
+					<div class="message" class:text-red-600={$page.status > 200}>{$forgotMessage}</div>
+				{:else}
+					<p class="text-lg text-gray-500 mb-6">Enter your email address to receive an email with a link to change your password.</p>
+					<Field form={forgotForm} name="token">
+						<Control let:attrs>
+							<input {...attrs} type="hidden" bind:value={$forgotFormData.token} />
+						</Control>
+					</Field>
+					<Field form={forgotForm} name="email">
+						<Control let:attrs>
+							<Label>Email</Label>
+							<input {...attrs} bind:value={$forgotFormData.email} />
+						</Control>
+						<FieldErrors />
+					</Field>
+					<button type="submit" class="button">Request Reset Code</button>
+					<div class="pt-6 text-sm text-gray-900 text-center font-medium">
+						<button type="button" on:click="{() => { state = 'signIn' }}" class="text-gray-900 hover:text-orange-700">
+							&larr;&nbsp; Sign In Instead
+						</button>
+					</div>
+				{/if}
+			</form>
+		{/if}
 
 	{:else if state === 'reset'}
-		<form method="POST" use:resetEnhance>
-			<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Choose a New Password</h3>
-			<Field form={resetForm} name="token">
-				<Control let:attrs>
-					<input {...attrs} type="hidden" bind:value={$resetFormData.token} />
-				</Control>
-			</Field>
-			<Field form={resetForm} name="code">
-				<Control let:attrs>
-					<input {...attrs} type="hidden" bind:value={$resetFormData.code} />
-				</Control>
-			</Field>
-			<Field form={resetForm} name="password">
-				<Control let:attrs>
-					<Label>Password</Label>
-					<ShowHideIcon bind:reveal={reveal}>
-						{#if reveal}
-							<input {...attrs} type="text" bind:value={$resetFormData.password} />
-						{:else}
-							<input {...attrs} type="password" bind:value={$resetFormData.password} />
-						{/if}
-					</ShowHideIcon>
-				</Control>
-				<FieldErrors />
-			</Field>
-			<button type="submit" class="button">Request Reset Code</button>
-			<slot name="footer" />
-		</form>   
+		{#if processing}
+			<div class="message">Processing...</div>
+		{:else if success}
+			<div class="message">{$resetMessage}</div>
+		{:else}
+			<form method="POST" use:resetEnhance>
+				<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Choose a New Password</h3>
+				{#if $resetMessage}
+					<div class="message" class:text-red-600={$page.status > 200}>{$resetMessage}</div>
+				{:else}
+					<Field form={resetForm} name="token">
+						<Control let:attrs>
+							<input {...attrs} type="hidden" bind:value={$resetFormData.token} />
+						</Control>
+					</Field>
+					<Field form={resetForm} name="code">
+						<Control let:attrs>
+							<input {...attrs} type="hidden" bind:value={$resetFormData.code} />
+						</Control>
+					</Field>
+					<Field form={resetForm} name="password">
+						<Control let:attrs>
+							<Label>Password</Label>
+							<ShowHideIcon bind:reveal={reveal}>
+								{#if reveal}
+									<input {...attrs} type="text" bind:value={$resetFormData.password} />
+								{:else}
+									<input {...attrs} type="password" bind:value={$resetFormData.password} />
+								{/if}
+							</ShowHideIcon>
+						</Control>
+						<FieldErrors />
+					</Field>
+					<button type="submit" class="button">Save New Password</button>
+				{/if}
+			</form>
+		{/if}	
 	{/if}
 </AuthContainer>
