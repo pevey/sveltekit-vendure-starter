@@ -35,7 +35,6 @@
 		"svelte-check": "^3.6.6",
 		"svelte-meta-tags": "^3.1.1",
 		"sveltekit-search-params": "^2.1.1",
-		"sveltekit-stripe": "^3.0.1",
 		"sveltekit-superfetch": "^3.0.3",
 		"sveltekit-superforms": "^2.8.0",
 		"sveltekit-turnstile": "^1.2.0",
@@ -49,7 +48,8 @@
 		"zod": "^3.22.4"
 	},
 	"dependencies": {
-		"@urql/svelte": "^4.1.0"
+		"@urql/svelte": "^4.1.0",
+		"sveltekit-stripe": "/home/lacey/dev/sveltekit-stripe"
 	},
 	"type": "module"
 }

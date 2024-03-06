@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '$src/app.pcss'
 	import type { PageData } from './$types'
-	import { queryStore, getContextClient, setContextClient } from '@urql/svelte'
+	import { queryStore, setContextClient } from '@urql/svelte'
 	import { Toasts } from 'svoast'
 	import { onMount } from 'svelte'
 	import { page } from '$app/stores'
@@ -20,31 +20,23 @@
 	
 	const collections = data.collections
 	
-	let order: FragmentType<typeof ActiveOrder>
-	$: orderQuery = queryStore({
-		client,
-		query: GetActiveOrder,
-		pause: true
-	})
-	$: { if ($orderQuery?.data?.activeOrder) order = $orderQuery.data.activeOrder }
-	$: cartStore.set(order) // we store as fragment to make typing possible when passing to components
+	let cart: FragmentType<typeof ActiveOrder>
+	$: cartQuery = queryStore({ client, query: GetActiveOrder, pause: true })
+	$: { if ($cartQuery?.data?.activeOrder) cart = $cartQuery.data.activeOrder }
+	$: cartStore.set(cart) // we store as fragment to make typing possible
 
-	let customer: FragmentType<typeof Customer>
-	$: customerQuery = queryStore({
-			client,
-			query: GetCustomer,
-			pause: true
-	})
-	$: { if ($customerQuery?.data?.activeCustomer) customer = $customerQuery.data.activeCustomer }
-	$: userStore.set(customer) // we store as fragment to make typing possible when passing to components
+	let user: FragmentType<typeof Customer>
+	$: userQuery = queryStore({ client, query: GetCustomer, pause: true })
+	$: { if ($userQuery?.data?.activeCustomer) user = $userQuery.data.activeCustomer }
+	$: userStore.set(user) // we store as fragment to make typing possible
 
 	const nakedPaths = ['/auth', '/checkout', '/sitemap.xml']
 	$: naked = nakedPaths.includes($page.url.pathname)
 
 	onMount(() => {
 		if (browser) {
-			customerQuery.resume()
-			orderQuery.resume()
+			cartQuery.resume()
+			userQuery.resume()
 		}
 	})
 </script>

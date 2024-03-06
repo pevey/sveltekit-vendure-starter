@@ -1,13 +1,14 @@
 <script lang="ts">
-	import type { Writable } from 'svelte/store'
-	import type { Order } from '$lib/generated/graphql'
-	import { getContext } from 'svelte'
+	import { cartStore } from '$lib/stores'
+	import { useFragment } from '$lib/gql'
+	import { ActiveOrder } from '$lib/vendure'
 	import { formatCurrency } from '$lib/utils'
 	import VendureAsset from '$lib/components/VendureAsset.svelte'
 
 	export let currency: string
-	const order: Writable<Order> = getContext('order')
-	$: lines = $order?.lines || []
+
+	$: order = useFragment(ActiveOrder, $cartStore)
+	$: lines = order?.lines || []
 	let orderSummaryOpen = false
 
 	const toggleOrderSummary = () => {
@@ -21,6 +22,7 @@
 		}
 	}
 </script>
+{#if order}
 <section class="flex-col w-full lg:min-h-screen lg:max-w-md bg-gray-50 p-6 overflow-auto">
 	<h2 id="summary-heading" class="sr-only">Order summary</h2>
 	<div class="mx-auto max-w-lg">
@@ -61,10 +63,10 @@
 			<dl class="py-6 space-y-6 text-sm font-medium text-gray-500">
 				<div class="flex justify-between">
 					<dt>Subtotal</dt>
-					<dd class="text-gray-900">{formatCurrency($order?.subTotal, currency)}</dd>
+					<dd class="text-gray-900">{formatCurrency(order.subTotal, currency)}</dd>
 				</div>
-				{#if $order.discounts.length > 0}
-					{#each $order?.discounts as discount}
+				{#if order.discounts.length > 0}
+					{#each order.discounts as discount}
 						<div class="flex justify-between">
 							<dt class="flex">
 								Discount
@@ -74,8 +76,8 @@
 						</div>
 					{/each}
 				{/if}
-				{#if $order.taxSummary.length > 0}
-					{#each $order.taxSummary as tax}
+				{#if order.taxSummary.length > 0}
+					{#each order.taxSummary as tax}
 						{#if tax.taxTotal > 0}
 							<div class="flex justify-between">
 								<dt>{tax.description}</dt>
@@ -84,8 +86,8 @@
 						{/if}
 					{/each}
 				{/if}
-				{#if $order.shippingLines.length > 0}
-					{#each $order.shippingLines as shippingLine}
+				{#if order.shippingLines.length > 0}
+					{#each order.shippingLines as shippingLine}
 						<div class="flex justify-between">
 							<dt>{shippingLine.shippingMethod.name}</dt>
 							<dd class="text-gray-900">{formatCurrency(shippingLine.priceWithTax, currency)}</dd>
@@ -96,9 +98,10 @@
 			
 			<p class="py-6 flex items-center justify-between border-t border-gray-200 text-sm font-medium text-gray-900">
 				<span class="text-base">Total</span>
-				<span class="text-base">{formatCurrency($order?.totalWithTax, currency)}</span>
+				<span class="text-base">{formatCurrency(order.totalWithTax, currency)}</span>
 			</p>
 
 		</div>
 	</div>
 </section>
+{/if}

@@ -22,27 +22,7 @@ export const Order = gql(`
 				preview
 			}
 		}
-	}
-`)
-
-export const UpdatedOrder = gql(`
-	fragment UpdatedOrder on Order {
-		id
-		code
-		state
-		totalQuantity
-		totalWithTax
-		currencyCode
-		lines {
-			id
-			unitPriceWithTax
-			quantity
-			linePriceWithTax
-			productVariant {
-				id
-				name
-			}
-		}
+		orderPlacedAt
 	}
 `)
 
@@ -51,8 +31,8 @@ export const ActiveOrder = gql(`
 		__typename
 		id
 		code
-		couponCodes
 		state
+		orderPlacedAt
 		currencyCode
 		totalQuantity
 		subTotal
@@ -64,10 +44,6 @@ export const ActiveOrder = gql(`
 			taxRate
 			taxBase
 			taxTotal
-		}
-		discounts {
-			description
-			amountWithTax
 		}
 		lines {
 			id
@@ -97,13 +73,66 @@ export const ActiveOrder = gql(`
 			}
 			priceWithTax
 		}
+		discounts {
+			description
+			amountWithTax
+		}
+		couponCodes
+		promotions {
+			id
+			startsAt
+			endsAt
+			couponCode
+			perCustomerUsageLimit
+			usageLimit
+			name
+			description
+			enabled
+		}
+		surcharges {
+			description
+			sku
+			price
+			priceWithTax
+			taxRate
+		}
+		fulfillments {
+			createdAt
+			updatedAt
+			lines {
+				orderLine {
+					id
+					productVariant {
+						id
+						name
+						sku
+					}
+				}
+				quantity
+			}
+			state
+			method
+			trackingCode
+		}
+	}
+`)
+
+export const ShippingMethodQuote = gql(`
+	fragment ShippingMethodQuote on ShippingMethodQuote {
+		id
+		price
+		priceWithTax
+		code
+		name
+		description
+		metadata
 	}
 `)
 
 export const GetOrderByCode = gql(`
 	query GetOrderByCode($code: String!) {
 		orderByCode(code: $code) {
-			...Order
+			...ActiveOrder
 		}
 	}
 `)
@@ -120,7 +149,7 @@ export const AddItemToOrder = gql(`
 	mutation AddItemToOrder($variantId: ID!, $quantity: Int!) {
 		addItemToOrder(productVariantId: $variantId, quantity: $quantity) {
 			__typename
-			...UpdatedOrder
+			...ActiveOrder
 			... on ErrorResult {
 				errorCode
 				message
@@ -128,7 +157,7 @@ export const AddItemToOrder = gql(`
 			... on InsufficientStockError {
 				quantityAvailable
 				order {
-					...UpdatedOrder
+					...ActiveOrder
 				}
 			}
 		}
@@ -204,11 +233,7 @@ export const SetOrderShippingAddress = gql(`
 export const GetOrderShippingMethods = gql(`
 	query GetOrderShippingMethods {
 		eligibleShippingMethods {
-			id
-			code
-			name
-			price
-			description
+			...ShippingMethodQuote
 		}
 	}
 `)
@@ -255,7 +280,7 @@ export const AddOrderPayment = gql(`
 `)
 
 export const TransitionOrderToState = gql(`
-	mutation TransitionToState($state: String!) {
+	mutation TransitionOrderToState($state: String!) {
 		transitionOrderToState(state: $state) {
 			...ActiveOrder
 			...on OrderStateTransitionError {

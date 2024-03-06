@@ -48,3 +48,5 @@ Make sure your Vendure backend is running first and that you configure the VENDU
 ```bash
 yarn dev
 ```
+
+NOTE: SvelteKit uses Vite, and Vite optimizes dependencies after they are installed.  After you set up your project and install all packages and then run it for the first time using `yarn dev`, you will see strange behavior the first time you navigate to each page.  This will include strange console errors, hung navigation, etc.  If you look in the terminal where you are running `yarn dev`, you will see messages that explain vite is optimizing dependencies and reloading the app several times.  After visiting all pages in the app, this should not occur again unless you update/re-install packages.  This does not affect builds, only dev mode.

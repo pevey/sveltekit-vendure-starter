@@ -13,20 +13,12 @@
 	const client = getContextClient()
 
 	let order: FragmentType<typeof ActiveOrder>
-	$: orderQuery = queryStore({
-		client,
-		query: GetActiveOrder,
-		pause: true
-	})
+	$: orderQuery = queryStore({ client, query: GetActiveOrder, pause: true, requestPolicy: 'network-only' })
 	$: { if ($orderQuery?.data?.activeOrder) order = $orderQuery.data.activeOrder }
 	$: cartStore.set(order) // we store as fragment to make typing possible when passing to components
 
 	let customer: FragmentType<typeof Customer>
-	$: customerQuery = queryStore({
-			client,
-			query: GetCustomer,
-			pause: true
-	})
+	$: customerQuery = queryStore({ client, query: GetCustomer, pause: true, requestPolicy: 'network-only' })
 	$: { if ($customerQuery?.data?.activeCustomer) customer = $customerQuery.data.activeCustomer }
 	$: userStore.set(customer) // we store as fragment to make typing possible when passing to components
 
