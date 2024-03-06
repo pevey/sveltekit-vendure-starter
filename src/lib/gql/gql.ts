@@ -23,7 +23,7 @@ const documents = {
     "\n\tmutation LogIn($username: String!, $password: String!, $rememberMe: Boolean!) {\n\t\tlogin(username: $username, password: $password, rememberMe: $rememberMe) {\n\t\t\t... on CurrentUser {\n\t\t\t\tid\n\t\t\t}\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.LogInDocument,
     "\n\tmutation LogOut {\n\t\tlogout {\n\t\t\tsuccess\n\t\t}\n\t}\n": types.LogOutDocument,
     "\n\tmutation Register($input: RegisterCustomerInput!) {\n\t\tregisterCustomerAccount(input: $input) {\n\t\t\t... on Success {\n\t\t\t\tsuccess\n\t\t\t}\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.RegisterDocument,
-    "\n\tmutation Verify($token: String!) {\n\t\tverifyCustomerAccount(token: $token) {\n\t\t\t...on CurrentUser {\n\t\t\t\tid\n\t\t\t\tidentifier\n\t\t\t}\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.VerifyDocument,
+    "\n\tmutation VerifyCustomerAccount($token: String!) {\n\t\tverifyCustomerAccount(token: $token) {\n\t\t\t...on CurrentUser {\n\t\t\t\tid\n\t\t\t\tidentifier\n\t\t\t}\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.VerifyCustomerAccountDocument,
     "\n\tmutation RequestPasswordReset($emailAddress: String!) {\n\t\trequestPasswordReset(emailAddress: $emailAddress) {\n\t\t\t... on Success {\n\t\t\t\tsuccess\n\t\t\t}\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.RequestPasswordResetDocument,
     "\n\tmutation ResetPassword($token: String! $password: String!) {\n\t\tresetPassword(token: $token password: $password) {\n\t\t\t...on CurrentUser {\n\t\t\t\tid\n\t\t\t\tidentifier\n\t\t\t}\n\t\t\t... on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.ResetPasswordDocument,
     "\n\tquery GetCustomerOrders {\n\t\tactiveCustomer {\n\t\t\torders {\n\t\t\t\titems {\n\t\t\t\t\t...Order\n\t\t\t\t}\n\t\t\t\ttotalItems\n\t\t\t}\n\t\t}\n\t}\n": types.GetCustomerOrdersDocument,
@@ -113,7 +113,7 @@ export function gql(source: "\n\tmutation Register($input: RegisterCustomerInput
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tmutation Verify($token: String!) {\n\t\tverifyCustomerAccount(token: $token) {\n\t\t\t...on CurrentUser {\n\t\t\t\tid\n\t\t\t\tidentifier\n\t\t\t}\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation Verify($token: String!) {\n\t\tverifyCustomerAccount(token: $token) {\n\t\t\t...on CurrentUser {\n\t\t\t\tid\n\t\t\t\tidentifier\n\t\t\t}\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tmutation VerifyCustomerAccount($token: String!) {\n\t\tverifyCustomerAccount(token: $token) {\n\t\t\t...on CurrentUser {\n\t\t\t\tid\n\t\t\t\tidentifier\n\t\t\t}\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation VerifyCustomerAccount($token: String!) {\n\t\tverifyCustomerAccount(token: $token) {\n\t\t\t...on CurrentUser {\n\t\t\t\tid\n\t\t\t\tidentifier\n\t\t\t}\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

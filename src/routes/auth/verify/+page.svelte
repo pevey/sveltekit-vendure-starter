@@ -5,4 +5,4 @@
 </script>
 <MetaTags title="Email Confirmation" />
 {data.code}
-{data.success}
+{data.result}

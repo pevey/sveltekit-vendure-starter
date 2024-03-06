@@ -74,8 +74,8 @@ export const SignUp = gql(`
 	}
 `)
 
-export const VerifyEmail = gql(`
-	mutation Verify($token: String!) {
+export const VerifyCustomerAccount = gql(`
+	mutation VerifyCustomerAccount($token: String!) {
 		verifyCustomerAccount(token: $token) {
 			...on CurrentUser {
 				id

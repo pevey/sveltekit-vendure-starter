@@ -143,7 +143,7 @@
 				processing = true
 				success = false
 				if (form.valid) {
-					const resetResult = await client.mutation(ResetPassword, { token: form.data.token, code: form.data.code, password: form.data.password }).toPromise()
+					const resetResult = await client.mutation(ResetPassword, { token: form.data.token, password: form.data.password }).toPromise()
 					if (resetResult?.data?.resetPassword?.__typename === 'CurrentUser') {
 						setMessage(form, 'Your password has been reset. Please sign in with your new password.')
 						success = true

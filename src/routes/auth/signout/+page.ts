@@ -1,15 +1,14 @@
 import type { PageLoad } from './$types'
-import { redirect } from '@sveltejs/kit'
 import { browser } from '$app/environment'
 import { SignOut } from '$lib/vendure'
 
 export const load = (async ({ parent }) => {
+	let result: any
 	if (browser) {
 		const { client } = await parent()
-		const result = await client.mutation(SignOut, {}).toPromise()
-		// TODO: handle error
-		console.log(result)
-		// redirect(302, '/')
+		result = await client.mutation(SignOut, {}).toPromise()
 	}
-	return {}
+	return {
+		result: result?.data?.logout?.success
+	}
 }) satisfies PageLoad
