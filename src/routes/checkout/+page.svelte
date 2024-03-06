@@ -39,6 +39,7 @@
 	import { formatCurrency } from '$lib/utils'
 	import CheckoutOrderSummary from '$lib/components/CheckoutOrderSummary.svelte'
 	import MetaTags from '$lib/components/MetaTags.svelte'
+    import { error } from '@sveltejs/kit';
 
 	let token: string = ''
 	if (!PUBLIC_TURNSTILE_SITE_KEY) token = Math.floor(Math.random() * 1000000).toString()
@@ -56,40 +57,42 @@
 
 	const client = getContextClient()
 
-	let cart: FragmentType<typeof ActiveOrder>
-	$: cartQuery = queryStore({ client, query: GetActiveOrder, pause: true, requestPolicy: 'network-only' })
-	$: if ($cartQuery?.data?.activeOrder) cart = $cartQuery.data.activeOrder
-	$: cartStore.set(cart) 
-	$: order = (cart)? useFragment(ActiveOrder, cart) : null 
-	// $: { if (cart?.couponCodes?.length) cart.couponCodes = cart.couponCodes.map(v => v.toUpperCase()) }
+	const updateStores = async () => {
+		const promises = Promise.all([
+			client.query(GetActiveOrder, {}, { requestPolicy: 'network-only' }).toPromise(),
+			client.query(GetCustomer, {}, { requestPolicy: 'network-only'} ).toPromise(),
+		])
+		const [orderResult, customerResult] = await promises
+		if (orderResult?.data?.activeOrder) cartStore.set(orderResult.data.activeOrder)
+		if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
+	}
 
-	let user: FragmentType<typeof Customer>
-	$: userQuery = queryStore({ client, query: GetCustomer, pause: true, requestPolicy: 'network-only' })
-	$: $userQuery?.data
-	$: if ($userQuery?.data?.activeCustomer) user = $userQuery.data.activeCustomer
-	$: userStore.set(user)
-	$: customer = (user)? useFragment(Customer, user) : null
-	// $: if (customer) setCustomer({ emailAddress: customer.emailAddress, firstName: customer.firstName, lastName: customer.lastName })
-	$: console.log(customer)
+	onMount(() => {
+		if (browser) {
+			updateStores()
+			if ($userStore) {
+				const { emailAddress, firstName, lastName } = useFragment(Customer, $userStore)
+				setCustomer({ emailAddress, firstName, lastName })
+			}
+		}
+	})
 
-	$: addressQuery = ($userQuery?.data?.activeCustomer)? queryStore({ client, query: GetCustomerAddresses, requestPolicy: 'network-only' }) : null
+	$: order = useFragment(ActiveOrder, $cartStore)
+	$: customer = useFragment(Customer, $userStore)
+
+	$: addressQuery = (customer)? queryStore({ client, query: GetCustomerAddresses, requestPolicy: 'network-only' }) : null
 	$: if ($addressQuery?.data?.activeCustomer?.addresses) getContacts($addressQuery.data.activeCustomer.addresses)
 	$: addresses = useFragment(Address, $addressQuery?.data?.activeCustomer?.addresses)
 		
 	$: if (browser && shippingOptions) setShippingOption(selectedShippingOption)
-
-	onMount(async () => {
-		if (browser) {
-			cartQuery.resume()
-			userQuery.resume()
-		}
-	})
 
 	const setCustomer = async (input: CreateCustomerInput) => {
 		let result = await client.mutation(SetOrderCustomer, { input }).toPromise()
 		console.log(result)
 		if (result?.data?.setCustomerForOrder?.__typename === 'EmailAddressConflictError') {
 			errorMessage = 'An account with that email address already exists.  Please sign in.'
+		} else if (result?.data?.setCustomerForOrder?.__typename === 'Order') {
+			errorMessage = ''
 		}
 	}
 
@@ -198,9 +201,10 @@
 	<p>We use a third party (<a href="https://stripe.com">Stripe</a>) to process credit card payments for enhanced security.  Making payments on this site using Stripe requires javascript.</p>
 </noscript>
 <MetaTags title="Checkout" description="Checkout page for {PUBLIC_SITE_NAME}"/>
-{#if $cartQuery.fetching}
+<!-- {#if $cartQuery.fetching}
 	<p>Loading...</p>
-{:else if !order?.lines}
+{:else if !order?.lines} -->
+{#if !order?.lines}
 	<p>Your cart is empty.</p>
 {:else if !token && PUBLIC_TURNSTILE_SITE_KEY}
 	<Turnstile theme="light" siteKey={PUBLIC_TURNSTILE_SITE_KEY} on:turnstile-callback={ async (e) => { 

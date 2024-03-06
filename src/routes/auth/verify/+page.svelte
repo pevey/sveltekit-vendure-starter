@@ -1,10 +1,9 @@
 <script lang="ts">
 	import type { PageData } from './$types'
-	import { getContextClient, queryStore } from '@urql/svelte'
+	import { getContextClient } from '@urql/svelte'
 	import { onMount } from 'svelte'
 	import { browser } from '$app/environment'
-	import { type FragmentType } from '$lib/gql'
-	import { ActiveOrder, GetActiveOrder, Customer, GetCustomer} from '$lib/vendure'
+	import { GetActiveOrder, GetCustomer} from '$lib/vendure'
 	import { cartStore, userStore } from '$lib/stores'
 	import MetaTags from '$lib/components/MetaTags.svelte'
 
@@ -12,20 +11,19 @@
 
 	const client = getContextClient()
 
-	let order: FragmentType<typeof ActiveOrder>
-	$: orderQuery = queryStore({ client, query: GetActiveOrder, pause: true, requestPolicy: 'network-only' })
-	$: { if ($orderQuery?.data?.activeOrder) order = $orderQuery.data.activeOrder }
-	$: cartStore.set(order) // we store as fragment to make typing possible when passing to components
-
-	let customer: FragmentType<typeof Customer>
-	$: customerQuery = queryStore({ client, query: GetCustomer, pause: true, requestPolicy: 'network-only' })
-	$: { if ($customerQuery?.data?.activeCustomer) customer = $customerQuery.data.activeCustomer }
-	$: userStore.set(customer) // we store as fragment to make typing possible when passing to components
+	const updateStores = async () => {
+		const promises = Promise.all([
+			client.query(GetActiveOrder, {}, { requestPolicy: 'network-only' }).toPromise(),
+			client.query(GetCustomer, {}, { requestPolicy: 'network-only'} ).toPromise(),
+		])
+		const [orderResult, customerResult] = await promises
+		if (orderResult?.data?.activeOrder) cartStore.set(orderResult.data.activeOrder)
+		if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
+	}
 
 	onMount(() => {
 		if (browser && data.result === 'CurrentUser') {
-			customerQuery.resume()
-			orderQuery.resume()
+			updateStores()
 		}
 	})
 </script>
