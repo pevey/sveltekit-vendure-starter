@@ -190,6 +190,17 @@ export const SetOrderCustomer = gql(`
 	}
 `)
 
+export const SetOrderShippingAddress = gql(`
+	mutation SetOrderShippingAddress($input: CreateAddressInput!) {
+		setOrderShippingAddress(input: $input) {
+			...on ErrorResult {
+				errorCode
+				message
+			}
+		}
+	}
+`)
+
 export const GetOrderShippingMethods = gql(`
 	query GetOrderShippingMethods {
 		eligibleShippingMethods {
@@ -198,17 +209,6 @@ export const GetOrderShippingMethods = gql(`
 			name
 			price
 			description
-		}
-	}
-`)
-
-export const SetOrderShippingAddress = gql(`
-	mutation SetOrderShippingAddress($input: CreateAddressInput!) {
-		setOrderShippingAddress(input: $input) {
-			...on ErrorResult {
-				errorCode
-				message
-			}
 		}
 	}
 `)

@@ -20,13 +20,14 @@
 	$: { if ($collectionQuery?.data?.collection) collection = useFragment(Collection, $collectionQuery.data.collection) || collection }
 	$: { if ($collectionQuery?.data?.search?.items) products = useFragment(SearchResult, $collectionQuery.data.search.items) || products }
 </script>
-<MetaTags title={collection?.name} description={collection?.description} />
+{#if collection}
+<MetaTags title={collection.name} description={collection.description} />
 <section class="mx-auto max-w-screen-2xl p-4 sm:p-6 lg:p-8">
-	<!-- <h1 class="text-2xl sm:text-3xl font-bold tracking-tight my-4 sm:my-6">{collection?.name}</h1> -->
+	<!-- <h1 class="text-2xl sm:text-3xl font-bold tracking-tight my-4 sm:my-6">{collection.name}</h1> -->
 	<section class="relative hidden sm:block sm:h-80 lg:h-96 w-full mb-8 sm:mb-16">
-		<VendureAsset preview={collection?.featuredAsset?.preview} preset="large" alt={collection?.name} class="absolute object-cover w-full h-full rounded-md"/>
+		<VendureAsset preview={collection.featuredAsset?.preview} preset="large" alt={collection.name} class="absolute object-cover w-full h-full rounded-md"/>
 		<div class="absolute inset-0 bg-black/30 flex items-center justify-center rounded-md">
-			<h1 class="text-2xl sm:text-4xl font-bold text-white">{collection?.name}</h1>
+			<h1 class="text-2xl sm:text-4xl font-bold text-white">{collection.name}</h1>
 		</div>
 	</section>
 	<div class="mx-auto max-w-screen-2xl">
@@ -46,3 +47,4 @@
 		</div>
 	</div>
 </section>
+{/if}

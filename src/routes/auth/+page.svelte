@@ -7,13 +7,11 @@
 	import { queryParam } from 'sveltekit-search-params'
 	import { getContextClient } from '@urql/svelte'
 	import { page } from '$app/stores'
-	import { goto } from '$app/navigation'
+	import { goto, invalidateAll } from '$app/navigation'
 	import { 
-		createClient,
 		GetActiveOrder, 
 		GetCustomer, 
 		SignIn, 
-		SignOut, 
 		SignUp, 
 		ResetPassword, 
 		RequestPasswordReset 
@@ -32,16 +30,26 @@
 	type state = 'signIn' | 'signUp' | 'forgot' | 'reset'
 	const code = queryParam('token') // reset code
 	let state = $code? 'reset' : 'signIn'
-	// let token: string = '' // turnstile token
-	let token: string = ''
+	let token: string = '' // turnstile token
 	if (!PUBLIC_TURNSTILE_SITE_KEY) token = Math.floor(Math.random() * 1000000).toString()
 	let reveal: boolean = false
 	let processing: boolean = false
 	let success: boolean = false
-	
-	const redirect = async function(rurl: string = '') {
-		// await goto(data.rurl? data.rurl : '/')
-		window.location.href = `/${rurl}`
+
+	const updateStores = async () => {
+		const promises = Promise.all([
+			client.query(GetActiveOrder, {}, { requestPolicy: 'network-only' }).toPromise(),
+			client.query(GetCustomer, {}, { requestPolicy: 'network-only'} ).toPromise(),
+		])
+		const [orderResult, customerResult] = await promises
+		if (orderResult?.data?.activeOrder) cartStore.set(orderResult.data.activeOrder)
+		if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
+	}
+
+	const handleSignIn = async () => {
+		updateStores()
+		// await invalidateAll()
+		await goto('/')
 	}
 
 	const client = getContextClient()
@@ -54,11 +62,7 @@
 				if (form.valid) {
 					const loginResult = await client.mutation(SignIn, { username: form.data.email.toLowerCase(), password: form.data.password, rememberMe: false }).toPromise()
 					if (loginResult?.data?.login?.__typename === 'CurrentUser') {
-						const orderResult = await client.query(GetActiveOrder, {}, { requestPolicy: 'network-only' }).toPromise()
-						if (orderResult?.data?.activeOrder) cartStore.set(orderResult.data.activeOrder)
-						const customerResult = await client.query(GetCustomer, {}, { requestPolicy: 'network-only'} ).toPromise()
-						if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
-						redirect()
+						handleSignIn()
 					} else {
 						if (loginResult?.data?.login?.__typename === 'InvalidCredentialsError') {
 							setMessage(form, 'The email or password you entered is incorrect.')
@@ -145,7 +149,7 @@
 				if (form.valid) {
 					const resetResult = await client.mutation(ResetPassword, { token: form.data.token, password: form.data.password }).toPromise()
 					if (resetResult?.data?.resetPassword?.__typename === 'CurrentUser') {
-						setMessage(form, 'Your password has been reset. Please sign in with your new password.')
+						setMessage(form, 'Your password has been reset.')
 						success = true
 					} else {
 						if (resetResult?.data?.resetPassword?.__typename === 'PasswordResetTokenInvalidError') {
@@ -179,61 +183,55 @@
 		/>
 
 	{:else if state === 'signIn'}
-		{#if processing}
-			<div class="message">Processing...</div>
-		{:else}
-			<form method="POST" use:signInEnhance>
-				<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Sign In to Your Account</h3>
-				{#if $signInMessage}
-					<div class="message" class:text-red-600={$page.status > 200}>{$signInMessage}</div>
-				{:else}
-					<p class="text-lg text-gray-500 mb-6">If you have an existing account, enter your email and password below.</p>
-				{/if}
-				<Field form={signInForm} name="token">
-					<Control let:attrs>
-						<input {...attrs} type="hidden" bind:value={$signInFormData.token} />
-					</Control>
-				</Field>
-				<Field form={signInForm} name="email">
-					<Control let:attrs>
-						<Label>Email</Label>
-						<input {...attrs} bind:value={$signInFormData.email} />
-					</Control>
-					<FieldErrors />
-				</Field>
-				<Field form={signInForm} name="password">
-					<Control let:attrs>
-						<Label>Password</Label>
-						<ShowHideIcon bind:reveal={reveal}>
-							{#if reveal}
-								<input {...attrs} type="text" bind:value={$signInFormData.password} />
-							{:else}
-								<input {...attrs} type="password" bind:value={$signInFormData.password} />
-							{/if}
-						</ShowHideIcon>
-					</Control>
-					<FieldErrors />
-				</Field>
-				<button type="submit" class="button">Sign In</button>
-				<AppleButton />
-				<div class="text-gray-900 text-sm text-center font-medium">
-					<span>Don't have an account?&nbsp;&nbsp;</span>
-					<button type="button" on:click="{() => { state = 'signUp' }}" class="text-orange-900 hover:text-orange-700">
-						Sign Up
-					</button>
-				</div>
-				<div class="text-sm text-gray-900 text-center font-medium">
-					<button type="button" on:click="{() => { state = 'forgot' }}" class="mt-4 hover:text-gray-700">
-						Forgot your password?
-					</button>
-				</div>
-			</form>
-		{/if}
+		<form method="POST" use:signInEnhance>
+			<h3 class="font-heading text-3xl text-gray-900 font-semibold text-center mb-4">Sign In to Your Account</h3>
+			{#if $signInMessage}
+				<div class="message" class:text-red-600={$page.status > 200}>{$signInMessage}</div>
+			{:else}
+				<p class="text-lg text-gray-500 mb-6">If you have an existing account, enter your email and password below.</p>
+			{/if}
+			<Field form={signInForm} name="token">
+				<Control let:attrs>
+					<input {...attrs} type="hidden" bind:value={$signInFormData.token} />
+				</Control>
+			</Field>
+			<Field form={signInForm} name="email">
+				<Control let:attrs>
+					<Label>Email</Label>
+					<input {...attrs} bind:value={$signInFormData.email} />
+				</Control>
+				<FieldErrors />
+			</Field>
+			<Field form={signInForm} name="password">
+				<Control let:attrs>
+					<Label>Password</Label>
+					<ShowHideIcon bind:reveal={reveal}>
+						{#if reveal}
+							<input {...attrs} type="text" bind:value={$signInFormData.password} />
+						{:else}
+							<input {...attrs} type="password" bind:value={$signInFormData.password} />
+						{/if}
+					</ShowHideIcon>
+				</Control>
+				<FieldErrors />
+			</Field>
+			<button type="submit" class="button">Sign In</button>
+			<AppleButton />
+			<div class="text-gray-900 text-sm text-center font-medium">
+				<span>Don't have an account?&nbsp;&nbsp;</span>
+				<button type="button" on:click="{() => { state = 'signUp' }}" class="text-orange-900 hover:text-orange-700">
+					Sign Up
+				</button>
+			</div>
+			<div class="text-sm text-gray-900 text-center font-medium">
+				<button type="button" on:click="{() => { state = 'forgot' }}" class="mt-4 hover:text-gray-700">
+					Forgot your password?
+				</button>
+			</div>
+		</form>
 
 	{:else if state === 'signUp'}
-		{#if processing}
-			<div class="message">Processing...</div>
-		{:else if success}
+		{#if success}
 			<div class="message">{$signUpMessage}</div>
 		{:else}
 			<form method="POST" use:signUpEnhance>
@@ -294,9 +292,7 @@
 		{/if}
 
 	{:else if state === 'forgot'}
-		{#if processing}
-			<div class="message">Processing...</div>
-		{:else if success}
+		{#if success}
 			<div class="message">{$forgotMessage}</div>
 		{:else}
 			<form method="POST" use:forgotEnhance>
@@ -328,9 +324,7 @@
 		{/if}
 
 	{:else if state === 'reset'}
-		{#if processing}
-			<div class="message">Processing...</div>
-		{:else if success}
+		{#if success}
 			<div class="message">{$resetMessage}</div>
 		{:else}
 			<form method="POST" use:resetEnhance>

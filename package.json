@@ -16,7 +16,7 @@
 	"devDependencies": {
 		"@graphql-codegen/cli": "^5.0.2",
 		"@graphql-codegen/client-preset": "^4.2.4",
-		"@melt-ui/svelte": "^0.75.2",
+		"@melt-ui/svelte": "^0.75.3",
 		"@parcel/watcher": "^2.4.1",
 		"@playwright/test": "^1.42.1",
 		"@sveltejs/adapter-node": "^4.0.1",

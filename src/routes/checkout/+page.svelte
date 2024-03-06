@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types'
-	import type { Customer, Order, ShippingMethodQuote, PaymentMethod, CreateCustomerInput, CreateAddressInput } from '$lib/generated/graphql'
+	import type { Customer, Order, ShippingMethodQuote, PaymentMethod, CreateCustomerInput, CreateAddressInput } from '$lib/gql/graphql'
 	import type { Address, StripeAddressElementOptions } from 'sveltekit-stripe'
 	import { Elements, PaymentElement, AddressElement } from 'sveltekit-stripe'
 	import { Turnstile } from 'sveltekit-turnstile'
@@ -21,8 +21,8 @@
 	import MetaTags from '$lib/components/MetaTags.svelte'
 
 	export let data: PageData
-	const customer = writable<Customer>(data.user)
-	const order = writable<Order>(data.cart)
+	// const customer = writable<Customer>(data.user)
+	// const order = writable<Order>(data.cart)
 	setContext('order', order)
 	setContext('customer', customer)
 
@@ -136,6 +136,7 @@
 	<p>Please enable javascript to complete checkout.</p>
 	<p>We use a third party (<a href="https://stripe.com">Stripe</a>) to process credit card payments for enhanced security.  Making payments on this site using Stripe requires javascript.</p>
 </noscript>
+<MetaTags title="Checkout" description="Checkout page for {PUBLIC_SITE_NAME}"/>
 {#if (!$order?.lines)}
 	<p>Your cart is empty.</p>
 {:else if !token}

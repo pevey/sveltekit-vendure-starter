@@ -9,6 +9,6 @@ export const load = (async ({ parent }) => {
 		result = await client.mutation(SignOut, {}).toPromise()
 	}
 	return {
-		result: result?.data?.logout?.success
+		success: result?.data?.logout?.success
 	}
 }) satisfies PageLoad
