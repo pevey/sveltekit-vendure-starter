@@ -3,7 +3,7 @@
 	import { getContextClient, queryStore } from '@urql/svelte'
 	import { useFragment } from '$lib/gql'
 	import { page } from '$app/stores'
-	import { Collection, SearchResult, GetCollection } from '$lib/vendure'
+	import { Collection, GetCollection } from '$lib/vendure'
 	import VendureAsset from '$lib/components/VendureAsset.svelte'
 	import MetaTags from '$lib/components/MetaTags.svelte'
 
@@ -13,12 +13,12 @@
 
 	// these two will always be set from our PageData to enable SSR or SSG
 	let collection = useFragment(Collection, data.result?.collection) || null
-	let products = useFragment(SearchResult, data.result?.search?.items) || []
+	let products = data.result?.search?.items || null
 	
 	// these three enable the client to take over data fetching after the initial render
 	$: collectionQuery = queryStore({ client: getContextClient(), query: GetCollection, variables: { slug } })
 	$: { if ($collectionQuery?.data?.collection) collection = useFragment(Collection, $collectionQuery.data.collection) || collection }
-	$: { if ($collectionQuery?.data?.search?.items) products = useFragment(SearchResult, $collectionQuery.data.search.items) || products }
+	$: products = ($collectionQuery?.data?.search?.items)? $collectionQuery.data.search.items : products
 </script>
 {#if collection}
 <MetaTags title={collection.name} description={collection.description} />
@@ -43,6 +43,8 @@
 						</div>
 					</div>
 				</a>
+			{:else}
+				<p>No products found</p>
 			{/each}
 		</div>
 	</div>

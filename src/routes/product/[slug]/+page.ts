@@ -5,6 +5,6 @@ export const load = (async function ({ parent, params }) {
 	const { client } = await parent()
 	return {
 		client,
-		product: await client.query(GetProduct, { slug: params.slug }).toPromise().then((result) => result.data?.product)
+		product: await client.query(GetProduct, { slug: params.slug }).toPromise().then((result: any) => result?.data?.product)
 	}
 }) satisfies PageLoad
