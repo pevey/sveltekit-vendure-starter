@@ -7,7 +7,7 @@
 	import { queryParam } from 'sveltekit-search-params'
 	import { getContextClient } from '@urql/svelte'
 	import { page } from '$app/stores'
-	import { goto, invalidateAll } from '$app/navigation'
+	import { goto } from '$app/navigation'
 	import { 
 		GetActiveOrder, 
 		GetCustomer, 
@@ -33,7 +33,6 @@
 	let token: string = '' // turnstile token
 	if (!PUBLIC_TURNSTILE_SITE_KEY) token = Math.floor(Math.random() * 1000000).toString()
 	let reveal: boolean = false
-	let processing: boolean = false
 	let success: boolean = false
 
 	const updateStores = async () => {
@@ -48,7 +47,6 @@
 
 	const handleSignIn = async () => {
 		updateStores()
-		// await invalidateAll()
 		await goto('/')
 	}
 
@@ -58,7 +56,6 @@
 			SPA: true,
 			validators: zod(signInReq),
 			onUpdate: async ({ form }) => {
-				processing = true
 				if (form.valid) {
 					const loginResult = await client.mutation(SignIn, { username: form.data.email.toLowerCase(), password: form.data.password, rememberMe: false }).toPromise()
 					if (loginResult?.data?.login?.__typename === 'CurrentUser') {
@@ -78,7 +75,6 @@
 					setMessage(form, 'Please correct the errors below.')
 				}
 				if (PUBLIC_TURNSTILE_SITE_KEY) token = ''
-				processing = false
 			}
 		})
 	const { form: signInFormData, enhance: signInEnhance, message: signInMessage } = signInForm
@@ -88,7 +84,6 @@
 			SPA: true,
 			validators: zod(signUpReq),
 			onUpdate: async ({ form }) => {
-				processing = true
 				success = false
 				if (form.valid) {
 					const registerResult = await client.mutation(SignUp, { input: { 
@@ -110,7 +105,6 @@
 					setMessage(form, 'Please correct the errors below.')
 				}
 				if (PUBLIC_TURNSTILE_SITE_KEY) token = ''
-				processing = false
 			}
 		})
 	const { form: signUpFormData, enhance: signUpEnhance, message: signUpMessage } = signUpForm
@@ -120,7 +114,6 @@
 			SPA: true,
 			validators: zod(forgotReq),
 			onUpdate: async ({ form }) => {
-				processing = true
 				success = false
 				if (form.valid) {
 					const resetResult = await client.mutation(RequestPasswordReset, { emailAddress: form.data.email.toLowerCase() }).toPromise()
@@ -134,7 +127,6 @@
 					setMessage(form, 'Please correct the errors below.')
 				}
 				if (PUBLIC_TURNSTILE_SITE_KEY) token = ''
-				processing = false
 			}
 		})
 	const { form: forgotFormData, enhance: forgotEnhance, message: forgotMessage } = forgotForm
@@ -144,7 +136,6 @@
 			SPA: true,
 			validators: zod(resetReq),
 			onUpdate: async ({ form }) => {
-				processing = true
 				success = false
 				if (form.valid) {
 					const resetResult = await client.mutation(ResetPassword, { token: form.data.token, password: form.data.password }).toPromise()
@@ -166,7 +157,6 @@
 					setMessage(form, 'Please correct the errors below.')
 				}
 				if (PUBLIC_TURNSTILE_SITE_KEY) token = ''
-				processing = false
 			}
 		})
 	const { form: resetFormData, enhance: resetEnhance, message: resetMessage } = resetForm
