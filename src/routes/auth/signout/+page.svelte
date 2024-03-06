@@ -1,17 +1,30 @@
 <script lang="ts">
-	import type { PageData } from './$types'
+	import { getContextClient } from '@urql/svelte'
 	import { onMount } from 'svelte'
 	import { browser } from '$app/environment'
+	import { SignOut } from '$lib/vendure'
 	import { cartStore, userStore } from '$lib/stores'
-	export let data: PageData
+
+	const client = getContextClient()
+	let result: any
+	let success: boolean
+
 	onMount(() => {
-		if (browser && data.success === true) {
+		if (browser) {
+			handleSignOut()
+		}
+	})
+	
+	const handleSignOut = async () => {
+		result = await client.mutation(SignOut, {}).toPromise()
+		success = result?.data?.logout?.success
+		if (success) {
 			cartStore.set(null)
 			userStore.set(null)
 		}
-	})
+	}
 </script>
-{#if data.success === true}
+{#if success === true}
 	<div class="flex">
 		<div class="mx-auto py-6 px-4 space-y-12">
 			<p class="text-xl text-center">You have been successfully signed out.</p>

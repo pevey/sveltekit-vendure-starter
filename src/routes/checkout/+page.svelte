@@ -65,6 +65,7 @@
 
 	let user: FragmentType<typeof Customer>
 	$: userQuery = queryStore({ client, query: GetCustomer, pause: true, requestPolicy: 'network-only' })
+	$: $userQuery?.data
 	$: if ($userQuery?.data?.activeCustomer) user = $userQuery.data.activeCustomer
 	$: userStore.set(user)
 	$: customer = (user)? useFragment(Customer, user) : null

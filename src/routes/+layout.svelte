@@ -21,12 +21,12 @@
 	const collections = data.collections
 	
 	let cart: FragmentType<typeof ActiveOrder>
-	$: cartQuery = queryStore({ client, query: GetActiveOrder, pause: true })
+	$: cartQuery = queryStore({ client, query: GetActiveOrder, pause: true, requestPolicy: 'network-only' })
 	$: { if ($cartQuery?.data?.activeOrder) cart = $cartQuery.data.activeOrder }
 	$: cartStore.set(cart) // we store as fragment to make typing possible
 
 	let user: FragmentType<typeof Customer>
-	$: userQuery = queryStore({ client, query: GetCustomer, pause: true })
+	$: userQuery = queryStore({ client, query: GetCustomer, pause: true, requestPolicy: 'network-only' })
 	$: { if ($userQuery?.data?.activeCustomer) user = $userQuery.data.activeCustomer }
 	$: userStore.set(user) // we store as fragment to make typing possible
 
