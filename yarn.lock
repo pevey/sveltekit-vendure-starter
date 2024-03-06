@@ -4563,8 +4563,10 @@ sveltekit-search-params@^2.1.1:
   resolved "https://registry.yarnpkg.com/sveltekit-search-params/-/sveltekit-search-params-2.1.1.tgz#4bc2cc08279ee6139d64a3ba7841670d0019868f"
   integrity sha512-tmsvdTV0DwXAXbVv7Iz+eULd/QPYbNWKNUnRiascK0Qiu9afAMMQdIZejVg1TQEpy441h2ZHbqyUnpcFg3eUHQ==
 
-sveltekit-stripe@/home/lacey/dev/sveltekit-stripe:
-  version "3.0.1"
+sveltekit-stripe@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/sveltekit-stripe/-/sveltekit-stripe-3.1.0.tgz#489b43c801d1d5994a976b1998604e5be614c3f1"
+  integrity sha512-EeNCHI483Qjre0tcswXLEsKnc4lwJ/Ph/3NLCsk+K8xOO4ZCD+ZvLmEGhzxBPj8HyTohQurw3wObQ6YIXia51Q==
   dependencies:
     "@stripe/stripe-js" "^3.0.7"
     "@sveltejs/vite-plugin-svelte" "^3.0.2"
