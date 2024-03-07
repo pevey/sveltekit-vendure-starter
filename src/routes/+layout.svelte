@@ -8,7 +8,7 @@
 	import { browser } from '$app/environment'
 	import { type FragmentType } from '$lib/gql'
 	import { ActiveOrder, GetActiveOrder, Customer, GetCustomer } from '$lib/vendure'
-	import { cartStore, userStore } from '$lib/stores'
+	import { cookiesDisabledStore, cartStore, userStore } from '$lib/stores'
 	import Theme from '$lib/components/Theme.svelte'
 	import NavBar from '$lib/components/NavBar.svelte'
 	import Footer from '$lib/components/Footer.svelte'
@@ -17,18 +17,22 @@
 
 	const client = data.client
 	setContextClient(client)
+	let retry: boolean = true
 	
 	const collections = data.collections
 	
 	let cart: FragmentType<typeof ActiveOrder>
-	$: cartQuery = queryStore({ client, query: GetActiveOrder, pause: true })
+	$: cartQuery = queryStore({ client, query: GetActiveOrder, pause: true, requestPolicy: 'network-only', context: { additionalTypenames: ['ActiveOrder'] } })
+	$: console.log($cartQuery)
+	$: if (browser && $cartQuery?.data === undefined && retry) { console.log('retrying'); cartQuery.reexecute({}); retry = false; if ($cartQuery?.data === undefined) cookiesDisabledStore.set(true) }
 	$: if (browser && $cartQuery?.data?.activeOrder) cart = $cartQuery.data.activeOrder
-	$: if (browser) cartStore.set(cart) // we store as fragment to make typing possible
+	$: if (browser) cartStore.set(cart) // stored as fragment
 
 	let user: FragmentType<typeof Customer>
-	$: userQuery = queryStore({ client, query: GetCustomer, pause: true })
+	$: userQuery = queryStore({ client, query: GetCustomer, pause: true, requestPolicy: 'network-only', context: { additionalTypenames: ['ActiveCustomer'] } })
+	$: console.log($userQuery)
 	$: if (browser && $userQuery?.data?.activeCustomer) user = $userQuery.data.activeCustomer
-	$: if (browser) userStore.set(user) // we store as fragment to make typing possible
+	$: if (browser) userStore.set(user) // stored as fragment
 	$: setContext('userQuery', userQuery)
 
 	const nakedPaths = ['/auth', '/checkout', '/sitemap.xml']

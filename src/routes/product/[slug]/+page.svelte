@@ -39,7 +39,7 @@
 
 	const addToCart = async (variantId: string): Promise<void> => {
 		processing = true
-		const result = await client.mutation(AddItemToOrder, { variantId: variantId, quantity: 1 }, { requestPolicy: 'network-only' }).toPromise()
+		const result = await client.mutation(AddItemToOrder, { variantId: variantId, quantity: 1 }, { additionalTypenames: ['ActiveOrder'] }).toPromise()
 		if (result.error) toast.error('Error adding item to cart')
 		else if (result.data) toast.success('Item added to cart')
 		processing = false

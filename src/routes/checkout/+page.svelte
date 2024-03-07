@@ -3,12 +3,13 @@
 	import { Elements, PaymentElement, AddressElement } from 'sveltekit-stripe'
 	import { Turnstile } from 'sveltekit-turnstile'
 	import { Truck, Warehouse } from 'lucide-svelte'
-	import { getContextClient, queryStore } from '@urql/svelte'
+	import { getContextClient, queryStore, type OperationResultStore, type OperationResult } from '@urql/svelte'
 	import { onMount } from 'svelte'
 	import { enhance } from '$app/forms'
 	import { browser } from '$app/environment'
 	import { type FragmentType, useFragment } from '$lib/gql'
-	import type { CreateCustomerInput, CreateAddressInput } from '$lib/gql/graphql'
+	import type { GetCustomerAddressesQuery } from '$lib/gql/graphql'
+	import type { CreateCustomerInput, CreateAddressInput, Exact } from '$lib/gql/graphql'
 	import { cartStore, userStore } from '$lib/stores'
 	import { 
 		ActiveOrder,
@@ -43,8 +44,10 @@
 	let token: string = ''
 	if (!PUBLIC_TURNSTILE_SITE_KEY) token = Math.floor(Math.random() * 1000000).toString()
 	let addressElementOptions: StripeAddressElementOptions = { mode: 'shipping' }
-	let contacts: any[]
 	let address: StripeAddress
+	// let addressQuery: any
+	// let addressQuery: OperationResultStore<GetCustomerAddressesQuery, Exact<{ [key: string]: never; }>>|null
+	// let addresses: OperationResult<GetCustomerAddressesQuery, {}>|undefined
 	let emailAddress: string
 	let firstName: string
 	let lastName: string
@@ -66,13 +69,9 @@
 		if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		if (browser) {
-			updateStores()
-			if ($userStore) {
-				const { emailAddress, firstName, lastName } = useFragment(Customer, $userStore)
-				setCustomer({ emailAddress, firstName, lastName })
-			}
+			updateStores()		
 		}
 	})
 
@@ -80,8 +79,8 @@
 	$: customer = useFragment(Customer, $userStore)
 
 	$: addressQuery = (customer)? queryStore({ client, query: GetCustomerAddresses, requestPolicy: 'network-only' }) : null
-	$: if ($addressQuery?.data?.activeCustomer?.addresses) getContacts($addressQuery.data.activeCustomer.addresses)
 	$: addresses = useFragment(Address, $addressQuery?.data?.activeCustomer?.addresses)
+	$: addresses && getContacts()
 		
 	$: if (browser && shippingOptions) setShippingOption(selectedShippingOption)
 
@@ -95,14 +94,17 @@
 		}
 	}
 
-	const getContacts = (addressFragment: FragmentType<typeof Address>[]) => {
-		const addresses = useFragment(Address, addressFragment)
+	const getContacts = () => {
+		if (!addresses) return // set by our urql query store
+		addressElementOptions.contacts = []
 		for (let address of addresses) {
-			contacts.push({
+			console.log(address)
+			if (address.fullName && address.streetLine1 && address.city && address.province && address.postalCode && address.country.code)
+			addressElementOptions.contacts.push({
 				name: address.fullName,
 				address: {
 					line1: address.streetLine1,
-					line2: address.streetLine2,
+					line2: address.streetLine2 || '',
 					city: address.city,
 					state: address.province,
 					postal_code: address.postalCode,
@@ -110,7 +112,7 @@
 				}
 			})
 		}
-		addressElementOptions.contacts = contacts
+		console.log(addressElementOptions)
 	}
 
 	const setAddress = async (firstName: string, lastName: string, address: StripeAddress) => {
@@ -120,8 +122,9 @@
 
 	const saveNewAddress = async (firstName: string, lastName: string, address: StripeAddress) => {
 		let vAddress = convertAddress(firstName, lastName, address)
-		if (addresses?.length) {
-			const existingAddress = addresses.find(v => v.streetLine1 === vAddress.streetLine1 && v.streetLine2 === vAddress.streetLine2 && v.city === vAddress.city && v.province === vAddress.province && v.postalCode === vAddress.postalCode)
+		if ($addressQuery?.data?.activeCustomer?.addresses) {
+			let a = useFragment(Address, $addressQuery?.data?.activeCustomer?.addresses)
+			const existingAddress = a.find(v => v.streetLine1 === vAddress.streetLine1 && v.streetLine2 === vAddress.streetLine2 && v.city === vAddress.city && v.province === vAddress.province && v.postalCode === vAddress.postalCode)
 			if (existingAddress) return
 		}
 		let result = client.mutation(CreateCustomerAddress, { input: vAddress }).toPromise()
@@ -131,12 +134,12 @@
 	const convertAddress = function (firstName: string, lastName: string, address: StripeAddress) {
 		return {
 			fullName: `${firstName} ${lastName}`,
-			streetLine1: address.line1 || '', // TODO: Why does Vendure make line 1 optional and line 2 not?
-			streetLine2: address.line2,
+			streetLine1: address.line1 || '',
+			streetLine2: address.line2 || '',
 			city: address.city,
 			province: address.state,
 			postalCode: address.postal_code,
-			countryCode: address.country || 'US' // Change fallback to your default country code or make sure all address in Vendure have country code
+			countryCode: address.country || 'US' // Change fallback to your default country code
 		} satisfies CreateAddressInput
 	}
 
@@ -206,7 +209,7 @@
 	<Turnstile theme="light" siteKey={PUBLIC_TURNSTILE_SITE_KEY} on:turnstile-callback={ async (e) => { 
 		token = e.detail.token
 	}} />
-{:else}
+{:else if !$addressQuery?.fetching}
 	<main class="lg:flex lg:min-h-full lg:flex-row-reverse lg:max-h-screen lg:overflow-hidden">
 		<!-- Logo on sm screen -->
 		<div class="px-4 py-6 sm:px-6 lg:hidden">

@@ -23,7 +23,7 @@
 		processing = true
 		const target = e.target as HTMLSelectElement
 		const quantity = +target.value
-		const result = await client.mutation(AdjustOrderLine, { orderLineId: orderLineId, quantity: quantity }, { requestPolicy: 'network-only' }).toPromise()
+		const result = await client.mutation(AdjustOrderLine, { orderLineId: orderLineId, quantity: quantity }, { additionalTypenames: ['ActiveOrder'] }).toPromise()
 		if (result.error) toast.error('Error updating cart')
 		else if (result.data) toast.success('Cart updated')
 		processing = false
@@ -32,7 +32,7 @@
 	const removeOrderLine = async (orderLineId: string) => {
 		if (processing) return
 		processing = true
-		const result = await client.mutation(RemoveOrderLine, { orderLineId: orderLineId }, { requestPolicy: 'network-only' }).toPromise()
+		const result = await client.mutation(RemoveOrderLine, { orderLineId: orderLineId }, { additionalTypenames: ['ActiveOrder'] }).toPromise()
 		if (result.error) toast.error('Error removing item from cart')
 		else if (result.data) toast.success('Item removed from cart')
 		processing = false

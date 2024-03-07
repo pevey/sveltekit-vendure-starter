@@ -4,12 +4,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	// If path starts with /checkout/success, wait for 500 ms
 	// This allows the order to be processed via the webhook before the page is rendered
-	if (event.url.pathname.startsWith('/checkout/success')) {
-		await new Promise(resolve => setTimeout(resolve, 500))
-	}
-
-	event.locals.sid = event.cookies.get('session') || ''
-	event.locals.ssig = event.cookies.get('session.sig') || ''
+	// if (event.url.pathname.startsWith('/checkout/success')) {
+	// 	await new Promise(resolve => setTimeout(resolve, 500))
+	// }
 
 	// Required for all paths
 	const response = await resolve(event)
