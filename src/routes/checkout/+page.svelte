@@ -39,7 +39,6 @@
 	import { formatCurrency } from '$lib/utils'
 	import CheckoutOrderSummary from '$lib/components/CheckoutOrderSummary.svelte'
 	import MetaTags from '$lib/components/MetaTags.svelte'
-    import { error } from '@sveltejs/kit';
 
 	let token: string = ''
 	if (!PUBLIC_TURNSTILE_SITE_KEY) token = Math.floor(Math.random() * 1000000).toString()
@@ -201,9 +200,6 @@
 	<p>We use a third party (<a href="https://stripe.com">Stripe</a>) to process credit card payments for enhanced security.  Making payments on this site using Stripe requires javascript.</p>
 </noscript>
 <MetaTags title="Checkout" description="Checkout page for {PUBLIC_SITE_NAME}"/>
-<!-- {#if $cartQuery.fetching}
-	<p>Loading...</p>
-{:else if !order?.lines} -->
 {#if !order?.lines}
 	<p>Your cart is empty.</p>
 {:else if !token && PUBLIC_TURNSTILE_SITE_KEY}

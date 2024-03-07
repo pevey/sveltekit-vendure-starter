@@ -56,9 +56,9 @@ export const ProductDetail = gql(`
 				...Asset
 			}
 		}
-		customFields {
-			shortDescription
-		}
+		# customFields {
+		# 	shortDescription
+		# }
 	}
 `)
 
