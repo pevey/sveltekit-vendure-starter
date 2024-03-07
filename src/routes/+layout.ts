@@ -3,6 +3,8 @@ import { createClient, GetTopLevelCollections } from '$lib/vendure'
 
 const client = createClient()
 
+export const prerender = true
+
 export const load = (async function () {
 	return {
 		client,

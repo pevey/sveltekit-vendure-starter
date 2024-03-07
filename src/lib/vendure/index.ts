@@ -1,4 +1,4 @@
-import { Client, cacheExchange, fetchExchange, ssrExchange, queryStore, setContextClient } from '@urql/svelte'
+import { Client, cacheExchange, fetchExchange } from '@urql/svelte'
 import { dev } from '$app/environment'
 import { PUBLIC_SHOPAPI_DEV_URL, PUBLIC_SHOPAPI_PROD_URL } from '$env/static/public'
 

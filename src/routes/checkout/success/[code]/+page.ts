@@ -1,5 +1,7 @@
 import type { PageLoad } from './$types'
 
+export const prerender = false
+
 export const load = (async function ({ params, url }) {
 	const code = params.code
 	const status = url.searchParams.get('redirect_status')

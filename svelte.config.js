@@ -1,4 +1,6 @@
 import adapter from '@sveltejs/adapter-node'
+// import adapter from '@sveltejs/adapter-vercel'
+// import adapter from '@sveltejs/adapter-cloudflare'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 import { join } from 'path'
 import 'dotenv/config'
@@ -13,7 +15,17 @@ const config = {
 		}
 	}),
 	kit: {
+		// uncomment for Cloudflare
+		// adapter: adapter({
+		// 	routes: {
+		// 		include: ['/*']
+		// 	}
+		// }),
+		// uncomment for Node or Vercel
 		adapter: adapter(),
+		// prerender: {
+		// 	handleHttpError: 'ignore',
+		// },
 		alias: {
 			'$src/*': 'src/*'
 		}

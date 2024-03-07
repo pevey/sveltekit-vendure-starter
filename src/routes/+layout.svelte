@@ -23,14 +23,14 @@
 	
 	let cart: FragmentType<typeof ActiveOrder>
 	$: cartQuery = queryStore({ client, query: GetActiveOrder, pause: true, requestPolicy: 'network-only', context: { additionalTypenames: ['ActiveOrder'] } })
-	$: console.log($cartQuery)
+	// $: console.log($cartQuery)
 	$: if (browser && $cartQuery?.data === undefined && retry) { console.log('retrying'); cartQuery.reexecute({}); retry = false; if ($cartQuery?.data === undefined) cookiesDisabledStore.set(true) }
 	$: if (browser && $cartQuery?.data?.activeOrder) cart = $cartQuery.data.activeOrder
 	$: if (browser) cartStore.set(cart) // stored as fragment
 
 	let user: FragmentType<typeof Customer>
 	$: userQuery = queryStore({ client, query: GetCustomer, pause: true, requestPolicy: 'network-only', context: { additionalTypenames: ['ActiveCustomer'] } })
-	$: console.log($userQuery)
+	// $: console.log($userQuery)
 	$: if (browser && $userQuery?.data?.activeCustomer) user = $userQuery.data.activeCustomer
 	$: if (browser) userStore.set(user) // stored as fragment
 	$: setContext('userQuery', userQuery)

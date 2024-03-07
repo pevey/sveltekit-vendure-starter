@@ -1,7 +1,8 @@
 import type { PageLoad } from './$types'
-import { redirect } from '@sveltejs/kit'
 import { browser } from '$app/environment'
 import { VerifyCustomerAccount } from '$lib/vendure'
+
+export const prerender = false
 
 export const load = (async ({ url, parent }) => {
 	// vendure token renamed to code so as to not conflict with cf token if used
