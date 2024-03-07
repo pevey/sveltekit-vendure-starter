@@ -4,6 +4,10 @@
 
 If you are not familiar with Vendure, you can learn more on [the project web site](https://www.vendure.io/).  Vendure is an open-source, MIT-licensed, Node.js-based ecommerce backend with tons of flexibility.  You can use it to power practically any ecommerce application you could think of.
 
+# Video
+
+https://github.com/pevey/sveltekit-medusa-starter/assets/7490308/571a1888-6f40-409b-807c-24413445d18f
+
 ## WORK IN PROGRESS
 
 This project is under active development.  Breaking changes will frequently occur.
