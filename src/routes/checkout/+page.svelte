@@ -265,6 +265,10 @@
 									confirmParams: { return_url: `${PUBLIC_STRIPE_REDIRECT_URL}/${order?.code}` }
 								})
 								console.log(stripeResponse)
+							} else if (stripeResponse && stripeResponse.error) {
+								errorMessage = stripeResponse.error.message
+								processing = false
+								cancel()
 							}
 						} catch {
 							await setOrderState('AddingItems')
