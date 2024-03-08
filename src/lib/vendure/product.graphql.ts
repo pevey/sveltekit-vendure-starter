@@ -15,9 +15,9 @@ export const Product = gql(`
 			price
 			stockLevel
 		}
-		customFields {
-			shortDescription
-		}
+		# customFields {
+		# 	shortDescription
+		# }
 	}
 `)
 
