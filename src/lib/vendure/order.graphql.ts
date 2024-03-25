@@ -96,6 +96,15 @@ export const ActiveOrder = gql(`
 			priceWithTax
 			taxRate
 		}
+		payments {
+			id
+			amount
+			errorMessage
+			method
+			state
+			transactionId
+			createdAt
+		}
 		fulfillments {
 			createdAt
 			updatedAt
@@ -264,6 +273,12 @@ export const GetOrderPaymentMethods = gql(`
 export const CreateStripePaymentIntent = gql(`
 	mutation CreateStripePaymentIntent {
 		createStripePaymentIntent
+	}
+`)
+
+export const GenerateBraintreeClientToken = gql(`
+	query GenerateBraintreeClientToken {
+		generateBraintreeClientToken
 	}
 `)
 
