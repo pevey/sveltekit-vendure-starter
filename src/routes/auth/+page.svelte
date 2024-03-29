@@ -46,7 +46,7 @@
 	}
 
 	const handleSignIn = async () => {
-		updateStores()
+		await updateStores()
 		await goto('/')
 	}
 

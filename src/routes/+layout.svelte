@@ -35,7 +35,7 @@
 	$: if (browser) userStore.set(user) // stored as fragment
 	$: setContext('userQuery', userQuery)
 
-	const nakedPaths = ['/auth', '/checkout', '/sitemap.xml']
+	const nakedPaths = ['/auth', '/checkout', '/sitemap.xml', '/braintree', '/test']
 	$: naked = nakedPaths.includes($page.url.pathname)
 
 	onMount(() => {

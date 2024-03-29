@@ -45,7 +45,7 @@ const documents = {
     "\n\tmutation SetOrderShippingMethod($id: [ID!]!) {\n\t\tsetOrderShippingMethod(shippingMethodId: $id) {\n\t\t\t...ActiveOrder\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.SetOrderShippingMethodDocument,
     "\n\tquery GetOrderPaymentMethods {\n\t\teligiblePaymentMethods {\n\t\t\tid\n\t\t\tname\n\t\t\tcode\n\t\t\tisEligible\n\t\t}\n\t}\n": types.GetOrderPaymentMethodsDocument,
     "\n\tmutation CreateStripePaymentIntent {\n\t\tcreateStripePaymentIntent\n\t}\n": types.CreateStripePaymentIntentDocument,
-    "\n\tquery GenerateBraintreeClientToken {\n\t\tgenerateBraintreeClientToken\n\t}\n": types.GenerateBraintreeClientTokenDocument,
+    "\n\tquery GenerateBraintreeClientToken($includeCustomerId: Boolean!) {\n\t\tgenerateBraintreeClientToken(includeCustomerId: $includeCustomerId)\n\t}\n": types.GenerateBraintreeClientTokenDocument,
     "\n\tmutation AddOrderPayment($input: PaymentInput!) {\n\t\taddPaymentToOrder(input: $input) {\n\t\t\t...ActiveOrder\n\t\t\t...on ErrorResult {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t}\n\t\t}\n\t}\n": types.AddOrderPaymentDocument,
     "\n\tmutation TransitionOrderToState($state: String!) {\n\t\ttransitionOrderToState(state: $state) {\n\t\t\t...ActiveOrder\n\t\t\t...on OrderStateTransitionError {\n\t\t\t\terrorCode\n\t\t\t\tmessage\n\t\t\t\ttransitionError\n\t\t\t\tfromState\n\t\t\t\ttoState\n\t\t\t}\n\t\t}\n\t}\n": types.TransitionOrderToStateDocument,
     "\n\tfragment Product on Product {\n\t\tid\n\t\tname\n\t\tslug\n\t\tdescription\n\t\tfeaturedAsset {\n\t\t\tid\n\t\t\tpreview\n\t\t}\n\t\tvariants {\n\t\t\tid\n\t\t\tprice\n\t\t\tstockLevel\n\t\t}\n\t\t# customFields {\n\t\t# \tshortDescription\n\t\t# }\n\t}\n": types.ProductFragmentDoc,
@@ -202,7 +202,7 @@ export function gql(source: "\n\tmutation CreateStripePaymentIntent {\n\t\tcreat
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tquery GenerateBraintreeClientToken {\n\t\tgenerateBraintreeClientToken\n\t}\n"): (typeof documents)["\n\tquery GenerateBraintreeClientToken {\n\t\tgenerateBraintreeClientToken\n\t}\n"];
+export function gql(source: "\n\tquery GenerateBraintreeClientToken($includeCustomerId: Boolean!) {\n\t\tgenerateBraintreeClientToken(includeCustomerId: $includeCustomerId)\n\t}\n"): (typeof documents)["\n\tquery GenerateBraintreeClientToken($includeCustomerId: Boolean!) {\n\t\tgenerateBraintreeClientToken(includeCustomerId: $includeCustomerId)\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

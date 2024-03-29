@@ -21,9 +21,9 @@
 		if (customerResult?.data?.activeCustomer) userStore.set(customerResult.data.activeCustomer)
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		if (browser && data.result === 'CurrentUser') {
-			updateStores()
+			await updateStores()
 		}
 	})
 </script>

@@ -71,7 +71,7 @@
 
 	onMount(async () => {
 		if (browser) {
-			updateStores()		
+			await updateStores()		
 		}
 	})
 

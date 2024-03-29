@@ -277,8 +277,8 @@ export const CreateStripePaymentIntent = gql(`
 `)
 
 export const GenerateBraintreeClientToken = gql(`
-	query GenerateBraintreeClientToken {
-		generateBraintreeClientToken
+	query GenerateBraintreeClientToken($includeCustomerId: Boolean!) {
+		generateBraintreeClientToken(includeCustomerId: $includeCustomerId)
 	}
 `)
 
