@@ -35,13 +35,22 @@ select:focus {
 }
 
 /* FORMS */
-[data-fs-label], .label {
-	@apply block m-1 mt-4 text-gray-600 font-semibold;
+[data-label="gpac"] {
+	@apply m-1 text-sm;
 }
-[data-fs-control], .input {
+[data-text-input="gpac"] {
+	@apply w-full p-3 rounded border-gray-400 ring-0 focus:ring-0 focus:border-gray-800;
+}
+[data-checkbox-input="gpac"] {
+	@apply my-2 p-2 rounded border-gray-400 ring-0 focus:ring-0 focus:border-gray-800;
+}
+[data-fs-label], .label {
+	@apply block m-1 mt-4 text-base text-gray-600 font-semibold;
+}
+[data-fs-control], [data-text-input="auth"], .input {
 	@apply w-full block py-3 px-4 text-gray-900 placeholder-gray-400 border border-gray-200 focus:border-violet-600 rounded-md;
 }
-[data-fs-field-errors], .validation {
+[data-fs-field-errors], .validation, .invalid {
 	@apply block my-2 text-sm text-red-600;
 }
 .button {

@@ -3,7 +3,6 @@
 	import { Turnstile } from 'sveltekit-turnstile'
 	import { setMessage, superForm } from 'sveltekit-superforms'
 	import { zod } from 'sveltekit-superforms/adapters'
-	import { Field, Control, Label, FieldErrors } from 'formsnap'
 	import { queryParam } from 'sveltekit-search-params'
 	import { getContextClient } from '@urql/svelte'
 	import { page } from '$app/stores'
@@ -19,7 +18,7 @@
 	import { signInReq, signUpReq, forgotReq, resetReq } from '$lib/validators'
 	import { cartStore, userStore, themeStore } from '$lib/stores'
 	import AuthContainer from '$lib/components/AuthContainer.svelte'
-	import ShowHideIcon from '$lib/components/ShowHideIcon.svelte'
+	import InputText from '$lib/components/InputText.svelte'
 	import AppleButton from '$lib/components/AppleButton.svelte'
 	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public'
 
@@ -57,7 +56,7 @@
 			validators: zod(signInReq),
 			onUpdate: async ({ form }) => {
 				if (form.valid) {
-					const loginResult = await client.mutation(SignIn, { username: form.data.email.toLowerCase(), password: form.data.password, rememberMe: false }).toPromise()
+					const loginResult = await client.mutation(SignIn, { username: form.data.emailAddress.toLowerCase(), password: form.data.password, rememberMe: false }).toPromise()
 					if (loginResult?.data?.login?.__typename === 'CurrentUser') {
 						handleSignIn()
 					} else {
@@ -87,10 +86,10 @@
 				success = false
 				if (form.valid) {
 					const registerResult = await client.mutation(SignUp, { input: { 
-						emailAddress: form.data.email.toLowerCase(), 
+						emailAddress: form.data.emailAddress.toLowerCase(), 
 						password: form.data.password, 
-						firstName: form.data.fname, 
-						lastName: form.data.lname } }).toPromise()
+						firstName: form.data.firstName, 
+						lastName: form.data.lastName } }).toPromise()
 					if (registerResult?.data?.registerCustomerAccount?.__typename === 'Success') {
 						setMessage(form, 'Your account has been created. Please check your email for a verification link.')
 						success = true
@@ -116,7 +115,7 @@
 			onUpdate: async ({ form }) => {
 				success = false
 				if (form.valid) {
-					const resetResult = await client.mutation(RequestPasswordReset, { emailAddress: form.data.email.toLowerCase() }).toPromise()
+					const resetResult = await client.mutation(RequestPasswordReset, { emailAddress: form.data.emailAddress.toLowerCase() }).toPromise()
 					if (resetResult?.data?.requestPasswordReset?.__typename === 'Success') {
 						setMessage(form, 'An email has been sent with a link to reset your password.')
 						success = true
@@ -180,31 +179,9 @@
 			{:else}
 				<p class="text-lg text-gray-500 mb-6">If you have an existing account, enter your email and password below.</p>
 			{/if}
-			<Field form={signInForm} name="token">
-				<Control let:attrs>
-					<input {...attrs} type="hidden" bind:value={$signInFormData.token} />
-				</Control>
-			</Field>
-			<Field form={signInForm} name="email">
-				<Control let:attrs>
-					<Label>Email</Label>
-					<input {...attrs} bind:value={$signInFormData.email} />
-				</Control>
-				<FieldErrors />
-			</Field>
-			<Field form={signInForm} name="password">
-				<Control let:attrs>
-					<Label>Password</Label>
-					<ShowHideIcon bind:reveal={reveal}>
-						{#if reveal}
-							<input {...attrs} type="text" bind:value={$signInFormData.password} />
-						{:else}
-							<input {...attrs} type="password" bind:value={$signInFormData.password} />
-						{/if}
-					</ShowHideIcon>
-				</Control>
-				<FieldErrors />
-			</Field>
+			<input type="hidden" name="token" bind:value={$signInFormData.token} />
+			<InputText form={signInForm} field="emailAddress" label="Email" dataAttribute="auth" />
+			<InputText form={signInForm} field="password" label="Password" type="password" bind:reveal={reveal} dataAttribute="auth" />
 			<button type="submit" class="button">Sign In</button>
 			<AppleButton />
 			<div class="text-gray-900 text-sm text-center font-medium">
@@ -230,45 +207,11 @@
 					<div class="message" class:text-red-600={$page.status > 200}>{$signUpMessage}</div>
 				{:else}
 					<p class="text-lg text-gray-500 mb-6">Welcome! To create an account, please enter your email and choose a password below.</p>
-					<Field form={signUpForm} name="token">
-						<Control let:attrs>
-							<input {...attrs} type="hidden" bind:value={$signUpFormData.token} />
-						</Control>
-					</Field>
-					<Field form={signUpForm} name="fname">
-						<Control let:attrs>
-							<Label>First Name</Label>
-							<input {...attrs} bind:value={$signUpFormData.fname} />
-						</Control>
-						<FieldErrors />
-					</Field>
-					<Field form={signUpForm} name="lname">
-						<Control let:attrs>
-							<Label>Last Name</Label>
-							<input {...attrs} bind:value={$signUpFormData.lname} />
-						</Control>
-						<FieldErrors />
-					</Field>
-					<Field form={signUpForm} name="email">
-						<Control let:attrs>
-							<Label>Email</Label>
-							<input {...attrs} bind:value={$signUpFormData.email} />
-						</Control>
-						<FieldErrors />
-					</Field>
-					<Field form={signUpForm} name="password">
-						<Control let:attrs>
-							<Label>Password</Label>
-							<ShowHideIcon bind:reveal={reveal}>
-								{#if reveal}
-									<input {...attrs} type="text" bind:value={$signUpFormData.password} />
-								{:else}
-									<input {...attrs} type="password" bind:value={$signUpFormData.password} />
-								{/if}
-							</ShowHideIcon>
-						</Control>
-						<FieldErrors />
-					</Field>
+					<input type="hidden" name="token" bind:value={$signUpFormData.token} />
+					<InputText form={signUpForm} field="firstName" label="First Name" dataAttribute="auth" />
+					<InputText form={signUpForm} field="lastName" label="Last Name" dataAttribute="auth" />
+					<InputText form={signUpForm} field="emailAddress" label="Email" dataAttribute="auth" />
+					<InputText form={signUpForm} field="password" label="Password" type="password" bind:reveal={reveal} dataAttribute="auth" />
 					<button type="submit" class="button">Create Account</button>
 					<AppleButton />
 					<div class="text-sm text-gray-900 text-center font-medium">
@@ -291,18 +234,8 @@
 					<div class="message" class:text-red-600={$page.status > 200}>{$forgotMessage}</div>
 				{:else}
 					<p class="text-lg text-gray-500 mb-6">Enter your email address to receive an email with a link to change your password.</p>
-					<Field form={forgotForm} name="token">
-						<Control let:attrs>
-							<input {...attrs} type="hidden" bind:value={$forgotFormData.token} />
-						</Control>
-					</Field>
-					<Field form={forgotForm} name="email">
-						<Control let:attrs>
-							<Label>Email</Label>
-							<input {...attrs} bind:value={$forgotFormData.email} />
-						</Control>
-						<FieldErrors />
-					</Field>
+					<input type="hidden" name="token" bind:value={$forgotFormData.token} />
+					<InputText form={signUpForm} field="emailAddress" label="Email" dataAttribute="auth" />
 					<button type="submit" class="button">Request Reset Code</button>
 					<div class="pt-6 text-sm text-gray-900 text-center font-medium">
 						<button type="button" on:click="{() => { state = 'signIn' }}" class="text-gray-900 hover:text-orange-700">
@@ -322,29 +255,9 @@
 				{#if $resetMessage}
 					<div class="message" class:text-red-600={$page.status > 200}>{$resetMessage}</div>
 				{:else}
-					<Field form={resetForm} name="token">
-						<Control let:attrs>
-							<input {...attrs} type="hidden" bind:value={$resetFormData.token} />
-						</Control>
-					</Field>
-					<Field form={resetForm} name="code">
-						<Control let:attrs>
-							<input {...attrs} type="hidden" bind:value={$resetFormData.code} />
-						</Control>
-					</Field>
-					<Field form={resetForm} name="password">
-						<Control let:attrs>
-							<Label>Password</Label>
-							<ShowHideIcon bind:reveal={reveal}>
-								{#if reveal}
-									<input {...attrs} type="text" bind:value={$resetFormData.password} />
-								{:else}
-									<input {...attrs} type="password" bind:value={$resetFormData.password} />
-								{/if}
-							</ShowHideIcon>
-						</Control>
-						<FieldErrors />
-					</Field>
+					<input type="hidden" name="token" bind:value={$resetFormData.token} />
+					<input type="hidden" name="code" bind:value={$resetFormData.code} />
+					<InputText form={signUpForm} field="password" label="Password" type="password" bind:reveal={reveal} dataAttribute="auth" />
 					<button type="submit" class="button">Save New Password</button>
 				{/if}
 			</form>

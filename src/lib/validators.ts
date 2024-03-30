@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const signInReq = z.object({
-	email: z.string().email().refine((val) => val.length > 0, {
+	emailAddress: z.string().email().refine((val) => val.length > 0, {
 		message: 'Email is required'
 	}),
 	password: z.string().min(6),
@@ -9,17 +9,17 @@ export const signInReq = z.object({
 })
 
 export const signUpReq = z.object({
-	email: z.string().email().refine((val) => val.length > 0, {
+	emailAddress: z.string().email().refine((val) => val.length > 0, {
 		message: 'Email is required'
 	}),
-	fname: z.string().min(1),
-	lname: z.string().min(1),
+	firstName: z.string().min(1),
+	lastName: z.string().min(1),
 	password: z.string().min(6),
 	token: z.string().min(1)
 })
 
 export const forgotReq = z.object({
-	email: z.string().email().refine((val) => val.length > 0, {
+	emailAddress: z.string().email().refine((val) => val.length > 0, {
 		message: 'Email is required'
 	}),
 	token: z.string().min(1)
@@ -61,5 +61,5 @@ export const braintreeCheckoutReq = z.object({
 	billingCountryCode: z.string().optional(),
 	billingPostalCode: z.string().optional(),
 	billingPhoneNumber: z.string().optional(),
-	extra: z.record(z.string()).optional(),
+	extra: z.string().optional(),
 })

@@ -68,7 +68,7 @@
 		})
 	}
 
-	const { form: formData, constraints, enhance, errors, message }  = superForm(data.form, { 
+	const form  = superForm(data.form, { 
 		SPA: true,
 		validators: zod(braintreeCheckoutReq),
 		onUpdate: async ({ form }) => {
@@ -91,6 +91,7 @@
 			}
 		}
 	})
+	const { form: formData, constraints, enhance, errors, message } = form
 
 	const validateAddress = (data: any) => {
 		console.log(data)
@@ -126,7 +127,7 @@
 		<div class="col-span-1">
 			<GooglePlacesAutocomplete 
 				apiKey={PUBLIC_GOOGLE_PLACES_API_KEY} 
-				form={data.form} 
+				{form} 
 				labelClass = 'text-sm'
 				inputClass = 'p-3 rounded border-gray-400 ring-0 focus:ring-0 focus:border-gray-800'
 				on:placeChanged={async (e) => await handlePlaceChanged(e)} 
