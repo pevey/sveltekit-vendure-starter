@@ -1750,6 +1750,7 @@ export type Mutation = {
 
 
 export type MutationAddItemToOrderArgs = {
+  customFields?: InputMaybe<OrderLineCustomFieldsInput>;
   productVariantId: Scalars['ID']['input'];
   quantity: Scalars['Int']['input'];
 };
@@ -1761,6 +1762,7 @@ export type MutationAddPaymentToOrderArgs = {
 
 
 export type MutationAdjustOrderLineArgs = {
+  customFields?: InputMaybe<OrderLineCustomFieldsInput>;
   orderLineId: Scalars['ID']['input'];
   quantity: Scalars['Int']['input'];
 };
@@ -2072,7 +2074,7 @@ export type OrderLimitError = ErrorResult & {
 export type OrderLine = Node & {
   __typename?: 'OrderLine';
   createdAt: Scalars['DateTime']['output'];
-  customFields?: Maybe<Scalars['JSON']['output']>;
+  customFields?: Maybe<OrderLineCustomFields>;
   /** The price of the line including discounts, excluding tax */
   discountedLinePrice: Scalars['Money']['output'];
   /** The price of the line including discounts and tax */
@@ -2131,6 +2133,23 @@ export type OrderLine = Node & {
   /** Non-zero if the unitPriceWithTax has changed since it was initially added to Order */
   unitPriceWithTaxChangeSinceAdded: Scalars['Money']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type OrderLineCustomFields = {
+  __typename?: 'OrderLineCustomFields';
+  height?: Maybe<Scalars['Float']['output']>;
+  legMaterial?: Maybe<ProductVariant>;
+  legSupport?: Maybe<ProductVariant>;
+  length?: Maybe<Scalars['Int']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type OrderLineCustomFieldsInput = {
+  height?: InputMaybe<Scalars['Float']['input']>;
+  legMaterialId?: InputMaybe<Scalars['ID']['input']>;
+  legSupportId?: InputMaybe<Scalars['ID']['input']>;
+  length?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type OrderList = PaginatedList & {
@@ -5580,6 +5599,7 @@ export type Mutation = {
 
 
 export type MutationAddItemToOrderArgs = {
+  customFields?: InputMaybe<OrderLineCustomFieldsInput>;
   productVariantId: Scalars['ID']['input'];
   quantity: Scalars['Int']['input'];
 };
@@ -5591,6 +5611,7 @@ export type MutationAddPaymentToOrderArgs = {
 
 
 export type MutationAdjustOrderLineArgs = {
+  customFields?: InputMaybe<OrderLineCustomFieldsInput>;
   orderLineId: Scalars['ID']['input'];
   quantity: Scalars['Int']['input'];
 };
@@ -5902,7 +5923,7 @@ export type OrderLimitError = ErrorResult & {
 export type OrderLine = Node & {
   __typename?: 'OrderLine';
   createdAt: Scalars['DateTime']['output'];
-  customFields?: Maybe<Scalars['JSON']['output']>;
+  customFields?: Maybe<OrderLineCustomFields>;
   /** The price of the line including discounts, excluding tax */
   discountedLinePrice: Scalars['Money']['output'];
   /** The price of the line including discounts and tax */
@@ -5961,6 +5982,23 @@ export type OrderLine = Node & {
   /** Non-zero if the unitPriceWithTax has changed since it was initially added to Order */
   unitPriceWithTaxChangeSinceAdded: Scalars['Money']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type OrderLineCustomFields = {
+  __typename?: 'OrderLineCustomFields';
+  height?: Maybe<Scalars['Float']['output']>;
+  legMaterial?: Maybe<ProductVariant>;
+  legSupport?: Maybe<ProductVariant>;
+  length?: Maybe<Scalars['Int']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type OrderLineCustomFieldsInput = {
+  height?: InputMaybe<Scalars['Float']['input']>;
+  legMaterialId?: InputMaybe<Scalars['ID']['input']>;
+  legSupportId?: InputMaybe<Scalars['ID']['input']>;
+  length?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type OrderList = PaginatedList & {

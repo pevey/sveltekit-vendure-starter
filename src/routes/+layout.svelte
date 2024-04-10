@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '$src/app.pcss'
-	import type { PageData } from './$types'
 	import { queryStore, setContextClient } from '@urql/svelte'
 	import { Toasts } from 'svoast'
 	import { onMount, setContext } from 'svelte'
@@ -13,7 +12,7 @@
 	import NavBar from '$lib/components/NavBar.svelte'
 	import Footer from '$lib/components/Footer.svelte'
 
-	export let data: PageData
+	export let data
 
 	const client = data.client
 	setContextClient(client)

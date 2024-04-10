@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { PageData } from './$types'
 	import { getContextClient } from '@urql/svelte'
 	import { onMount } from 'svelte'
 	import { browser } from '$app/environment'
@@ -7,7 +6,7 @@
 	import { cartStore, userStore } from '$lib/stores'
 	import MetaTags from '$lib/components/MetaTags.svelte'
 
-	export let data: PageData
+	export let data
 
 	const client = getContextClient()
 

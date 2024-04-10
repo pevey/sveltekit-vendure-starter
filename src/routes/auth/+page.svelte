@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { PageData } from './$types'
 	import { Turnstile } from 'sveltekit-turnstile'
 	import { setMessage, superForm } from 'sveltekit-superforms'
 	import { zod } from 'sveltekit-superforms/adapters'
@@ -22,7 +21,7 @@
 	import AppleButton from '$lib/components/AppleButton.svelte'
 	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public'
 
-	export let data: PageData
+	export let data
 
 	if ($userStore) goto('/')
 

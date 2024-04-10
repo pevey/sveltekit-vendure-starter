@@ -5,6 +5,7 @@ const IS_DEV = process.env.APP_ENV === 'dev'
 
 const config: CodegenConfig = {
 	schema: IS_DEV? process.env.PUBLIC_SHOPAPI_DEV_URL: process.env.PUBLIC_SHOPAPI_PROD_URL,
+	// watch: true,
 	// documents: ['src/**/*.{ts,svelte,graphql.ts}', '!src/lib/gql/*'],
 	documents: ['src/**/*.{ts,svelte,graphql.ts}', '!src/lib/gql/*'],
 	ignoreNoDocuments: true,
